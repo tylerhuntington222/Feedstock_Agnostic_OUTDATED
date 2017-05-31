@@ -62,7 +62,7 @@ states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")
 
 
 # Test out basic_biomass_catchment_calc.R function
-source("basic_biomass_catchment_calc.R")
+source("biomass_supply_buffer_func.R")
 
 # set feedstocks to include in models
 feeds <- c("residues", "herb", "woody") 

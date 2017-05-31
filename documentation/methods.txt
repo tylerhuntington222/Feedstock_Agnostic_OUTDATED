@@ -1,0 +1,3 @@
+Methods
+
+This file will contain written documentation of the methods used for the analysis in this project. 
