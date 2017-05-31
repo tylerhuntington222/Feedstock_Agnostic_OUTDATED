@@ -56,7 +56,7 @@ This subdirectory contains the clean_binary_data files outputted by the `clean.R
 #### Other Files
 
 For all intents and purposes you can ignore the `.gitattributes`, `.gitignore` and `README.md`
-files in the main project directory. Thes first two exist to administer git functionality for version controlling of the project and syncing local git repos with GitHub.com. The `README.md` file is what you are looking at right now! I hope it has been helfpul. 
+files in the main project directory. The first two exist to administer git functionality for version controlling of the project and syncing local git repos with GitHub.com. The `README.md` file is what you are looking at right now! I hope it has been helfpul. 
 
 
 
