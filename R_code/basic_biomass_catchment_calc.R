@@ -13,6 +13,9 @@
 # PARAMATERS:
 
 # data - a dataframe of billion ton data formatted as specified in clean.R 
+# default is a df with billion ton study data from years 2018, 2030, and 2040
+
+
 # year - an int (2018, 2030 or 20140) specifying the BT scenario year to use
 
 # scenario - a char indicating the billion ton model scenario to use
@@ -90,16 +93,11 @@
 
 #-----------------------------------------------------------------------------#
 
-# set working directory
-rm(list=ls())
-this.dir <- dirname(parent.frame(2)$ofile)
-setwd(file.path(this.dir))
-
 
 BasicBiomassCatchmentCalc <- 
-  function(data = bt_all_crops.df, year, scenario, feedstocks, price, radius) {
+  function(data, year, scenario, feedstocks, price, radius = 60) {
     
-    # # TEMP: define sample parameter values for testing function in global enviro
+    # # TEMP: define sample parameter values to test function in global enviro
     # year = 2018
     # scenario = "Basecase, all energy crops"
     # feedstocks = c("residues", "herb", "woody")
@@ -139,14 +137,24 @@ BasicBiomassCatchmentCalc <-
     library(ggplot2)
     
     
+    # define standardized CRS for spatial data
+    aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
+                   +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 
+                   +units=m +no_defs")
     
     ###### DEFINE PARAMS OF BT DATA TO ANALYZE ###### 
+    
+    # partition datasets
+    biomass.df <- data[[1]]
+    counties.spdf <- data[[2]]
+    biorefineries.sptdf <- data[[3]]
+    
     
     # define year of analysis
     year_choice <- as.character(year)
     
     # subset for chosen year
-    biomass.df <- subset(data,
+    biomass.df <- subset(biomass.df,
                          (paste(data$Year) == year_choice))
     
     # define scenario
@@ -208,12 +216,13 @@ BasicBiomassCatchmentCalc <-
     
     for (feedstock_type in feed_choices) {
       # extract particular feedstocks production data at county level
-      feedstock.df <- subset(biomass.df,
-                             (paste(biomass.df$Feedstock) 
-                              == eval(feedstock_type)))
+      feedstock.df <- 
+        subset(biomass.df,
+               (paste(biomass.df$Feedstock) == eval(feedstock_type)))
       
       # reformat feedstock string to elim whitespaces
       feedstock_type <- gsub(" ", "_", feedstock_type)
+      
       
       # subset for columns of interest
       feedstock.df <- subset(feedstock.df,
@@ -271,10 +280,12 @@ BasicBiomassCatchmentCalc <-
     # convert buffer radius to meters (units of CRS)
     buffer_rad <- (buffer_rad * 1609.34)
     
+
+    
     # create unique identifier for each biorefinery (RID)
     biorefineries.sptdf@data$RID <- seq(1, nrow(biorefineries.sptdf@data))
-    
-    # initialize empty list for biomass availability summaries for all refineries
+
+    # init empty list for biomass availability summaries for all refineries
     refinery_sums.ls <- list(NULL)
     
     # initialize empty list for refinery catchment SPDFs
@@ -283,21 +294,30 @@ BasicBiomassCatchmentCalc <-
     # initialize empty df for refinery summary dataframe
     refinery_summaries.df <- data.frame(NULL)
     
-    # toggle on for analyzing biorefineries
-    for (RID in biorefineries.sptdf@data$RID) {
+    # toggle on for analyzing all biorefineries
+    #for (RID in biorefineries.sptdf@data$RID) {
       
-      # TEMP: try for-loop with first 5 biorefineries
-      # for (RID in biorefineries.sptdf@data$RID[1:3]) {
+      
+      #TMP: try for-loop with first 5 biorefineries
+    for (RID in biorefineries.sptdf@data$RID[1:15]) {
       
       # subset for a particular refinery
-      focal_refinery.sptdf <- biorefineries.sptdf[biorefineries.sptdf$RID == RID,]
+      focal_refinery.sptdf <- 
+        biorefineries.sptdf[biorefineries.sptdf$RID == RID,]
+      
+      focal_refinery.sptdf <- spTransform(focal_refinery.sptdf, aea.crs)
       
       # create buffer around focal refinery
       refinery_buff.sp <- gBuffer(focal_refinery.sptdf, byid = F, 
                                   width = buffer_rad,         
                                   quadsegs = 100) 
+      # #TMP
+      # plot <- plot(counties.spdf)
+      # plot <- plot(refinery_buff.sp, add = T)
+      # return(plot)
+      
       # set buffer CRS
-      proj4string(refinery_buff.sp) <- aea.crs
+      #refinery_buff.sp <- spTransform(refinery_buff.sp, aea.crs)
       
       # intersect buffer with county baselayer to define catchment area 
       catchment.spdf <- raster::intersect(counties.spdf, refinery_buff.sp)
@@ -316,11 +336,13 @@ BasicBiomassCatchmentCalc <-
                                     function(i) slot(i, 'ID'))
       
       # create df to store polygon areas and FIDS
-      catch_areas_key.df <- data.frame(catch_county_FIDs.v, catch_county_areas.v) 
+      catch_areas_key.df <- 
+        data.frame(catch_county_FIDs.v, catch_county_areas.v) 
       names(catch_areas_key.df) <- c("FIPS", "CNTY_AREA_IN_CATCH")
       
       # merge extracted polygon areas to df portion of catchment SPDF
-      catchment.spdf <- sp::merge(catchment.spdf, catch_areas_key.df, by = "FIPS")
+      catchment.spdf <- 
+        sp::merge(catchment.spdf, catch_areas_key.df, by = "FIPS")
       
       # calculate proportion of original area of each county caught in catchment
       catchment.spdf@data$PROP_AREA_IN_CATCH <- 
@@ -343,7 +365,8 @@ BasicBiomassCatchmentCalc <-
         
         # calculate new feedstock production vals
         catchment.spdf[[paste(feed_type, "PRODUCTION", sep = "_")]] <- 
-          (as.numeric(catchment.spdf[[paste(feed_type, "PRODUCTION", sep = "_")]])  
+          (as.numeric(catchment.spdf[[paste(feed_type, 
+                                            "PRODUCTION", sep = "_")]])  
            * as.numeric(catchment.spdf[["PROP_AREA_IN_CATCH"]]))
         
         # calculate sum of feedstock type for entire catchment
@@ -386,7 +409,8 @@ BasicBiomassCatchmentCalc <-
       
       # change class of colums to char for subsequent rbinds
       for (col in seq(1, ncol(refinery_summaries.df),1)){
-        refinery_summaries.df[,col] <- as.character(refinery_summaries.df[,col])
+        refinery_summaries.df[,col] <- 
+          as.character(refinery_summaries.df[,col])
       }
       
     }

@@ -74,7 +74,14 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 #biorefs.spdf <- sp::spTransform(biorefs.spdf, aea.crs)
 
 # export clean binary data 
-#saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spddf.RDS")
+#saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
+
+# TEMP:
+biorefs.spdf <- rgdal::readOGR(dsn = "../../raw_data_files/biorefineries.shp",
+                        layer = "biorefineries")
+
+saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
+
 
 ###### US COUNTY BOUNDARIES DATA ######
 
@@ -85,8 +92,8 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
                                  %in% non_cont_states))
   
   # change GEOID column to FIPS code to match BT dataset
-  assign(names(county_bounds.spdf@data)[which(
-    names(county_bounds.spdf@data) == "GEOID")], "FIPS")
+  names(county_bounds.spdf@data)[which(names(county_bounds.spdf@data) == 
+          "GEOID")] <- "FIPS"
   
   # rename var for simplicity in subsequent analysis
   counties.spdf <- county_bounds.spdf
@@ -94,25 +101,25 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
   # set CRS
   counties.spdf <- spTransform(counties.spdf, aea.crs)
   
-  # export clearn binary data
+  # export clean binary data
   saveRDS(counties.spdf, "../clean_binary_data/counties.spdf.RDS")
 
 ###### US STATES BOUNDARIES ######
 
   # export clean binary data
-  saveRDS(state_bounds.spdf, "../clean_binary_data/counties.spdf.RDS")
+  saveRDS(state_bounds.spdf, "../clean_binary_data/states.spdf.RDS")
   
-  ###### DOE BILLION TON STUDY DATA ######
+###### BILLION TON STUDY DATA ######
   
   # change fips column name to FIPS to match counties baselayer
   names(bt_all_crops.df)[which(names(bt_all_crops.df) == "fips")] <-  "FIPS"
   
   # export cleaned bt data as binary 
-  saveRDS(bt_all_crops.df, "../clean_binary_data/bt_all_crops.df.RDS")
+  saveRDS(bt_all_crops.df, "../clean_binary_data/bt_biomass_18_30_40.df.RDS")
 
 ###### US ROADS NETWORK ######
 
   # export cleaned bt data as binary 
-  saveRDS(roads.sldf, "../clean_binary_data/road.sldf.RDS")
+  saveRDS(roads.sldf, "../clean_binary_data/roads.sldf.RDS")
 
 
