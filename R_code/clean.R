@@ -68,6 +68,8 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 #TODO:
 # get coords of bioref locations 
 
+# import geocoding func
+
 # merge bioref locations and attribute data
 
 # set CRS of biorefs locations SPDF
