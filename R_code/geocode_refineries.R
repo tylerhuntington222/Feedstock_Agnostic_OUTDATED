@@ -1,10 +1,6 @@
 # Geocoding script for biorefinery locations
 # Adapted from a script authored by Shane Lynn 10/10/2013
 
-source("geocode_refineries.R", chdir = T)
-getSrcDirectory(function(x) {x})
-
-
 dirname(rstudioapi::getActiveDocumentContext()$path)
 
 #load up the ggmap library
