@@ -80,6 +80,8 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 biorefs.spdf <- rgdal::readOGR(dsn = "../../raw_data_files/biorefineries.shp",
                         layer = "biorefineries")
 
+biorefs.spdf <- sp::spTransform(biorefs.spdf, aea.crs)
+
 saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
 
 

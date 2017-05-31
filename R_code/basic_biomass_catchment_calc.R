@@ -12,11 +12,13 @@
 
 # PARAMATERS:
 
-# data - a dataframe of billion ton data formatted as specified in clean.R 
-# default is a df with billion ton study data from years 2018, 2030, and 2040
+# data - a list of three data files in the following order:
+  # 1. billion ton data
+  # 2. US census county boundary data
+  # 3. biorefinery locations data
 
 
-# year - an int (2018, 2030 or 20140) specifying the BT scenario year to use
+# year - an int (2018, 2030 or 2040) specifying the BT scenario year to use
 
 # scenario - a char indicating the billion ton model scenario to use
 # choices:
@@ -93,16 +95,33 @@
 
 #-----------------------------------------------------------------------------#
 
+# TEMP: FOR TESTING FUNCTION ONLY
+###### LOAD CLEANED DATA ######
 
-BasicBiomassCatchmentCalc <- 
+# biomass.df <- readRDS("../clean_binary_data/bt_biomass_18_30_40.df.RDS")
+# 
+# biorefs.spdf <- readRDS("../clean_binary_data/biorefs.spdf.RDS")
+# 
+# counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
+# 
+# states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")
+
+# orig_biomass.df <- biomass.df
+# 
+# biomass.df <- orig_biomass.df
+
+
+BasicBiomassCatchmentCalc <-
   function(data, year, scenario, feedstocks, price, radius = 60) {
     
-    # # TEMP: define sample parameter values to test function in global enviro
-    # year = 2018
-    # scenario = "Basecase, all energy crops"
-    # feedstocks = c("residues", "herb", "woody")
-    # price = 80
-    # radius = 60
+    # #TEMP: define sample parameter values to test function in global enviro
+    # datasets <- list(biomass.df, counties.spdf, biorefs.spdf)
+    # data <- datasets
+    # year <- 2030
+    # scenario <- "Basecase, all energy crops"
+    # feedstocks <- c("residues", "herb", "woody")
+    # price <- 80
+    # radius <- 60
     
     ###### INSTALL PACKAGES (IF NECCESSARY) ######
     # install.packages("kimisc")
@@ -155,7 +174,7 @@ BasicBiomassCatchmentCalc <-
     
     # subset for chosen year
     biomass.df <- subset(biomass.df,
-                         (paste(data$Year) == year_choice))
+                         (paste(biomass.df$Year) == year_choice))
     
     # define scenario
     scenario_choice <- as.character(scenario)
@@ -199,14 +218,6 @@ BasicBiomassCatchmentCalc <-
     
     # make sure there are no duplicates in feed_choices vector
     feed_choices <- unique(feed_choices)
-    
-    # check that all feedstock choices will be in BT data, given other params
-    # elim from feed_choices vector if not
-    # for (choice in feed_choices) {
-    #   if (!(choice %in% unique(biomass.df$Feedstock))) {
-    #     feed_choices <- feed_choices[feed_choices != choice]
-    #   }
-    # }
     
     biomass.df <- subset(biomass.df,
                          (paste(biomass.df$Feedstock) %in% feed_choices))
@@ -281,7 +292,6 @@ BasicBiomassCatchmentCalc <-
     buffer_rad <- (buffer_rad * 1609.34)
     
 
-    
     # create unique identifier for each biorefinery (RID)
     biorefineries.sptdf@data$RID <- seq(1, nrow(biorefineries.sptdf@data))
 
@@ -295,11 +305,11 @@ BasicBiomassCatchmentCalc <-
     refinery_summaries.df <- data.frame(NULL)
     
     # toggle on for analyzing all biorefineries
-    #for (RID in biorefineries.sptdf@data$RID) {
+    for (RID in biorefineries.sptdf@data$RID) {
       
       
-      #TMP: try for-loop with first 5 biorefineries
-    for (RID in biorefineries.sptdf@data$RID[1:15]) {
+    #   #TEMP: try for-loop with first 10 biorefineries
+    # for (RID in biorefineries.sptdf@data$RID[1:10]) {
       
       # subset for a particular refinery
       focal_refinery.sptdf <- 
@@ -311,10 +321,6 @@ BasicBiomassCatchmentCalc <-
       refinery_buff.sp <- gBuffer(focal_refinery.sptdf, byid = F, 
                                   width = buffer_rad,         
                                   quadsegs = 100) 
-      # #TMP
-      # plot <- plot(counties.spdf)
-      # plot <- plot(refinery_buff.sp, add = T)
-      # return(plot)
       
       # set buffer CRS
       #refinery_buff.sp <- spTransform(refinery_buff.sp, aea.crs)
@@ -346,8 +352,8 @@ BasicBiomassCatchmentCalc <-
       
       # calculate proportion of original area of each county caught in catchment
       catchment.spdf@data$PROP_AREA_IN_CATCH <- 
-        (catchment.spdf@data$CNTY_AREA_IN_CATCH
-         /catchment.spdf@data$TOTAL_CNTY_AREA)
+        (as.numeric(catchment.spdf@data$CNTY_AREA_IN_CATCH)
+         /as.numeric(catchment.spdf@data$TOTAL_CNTY_AREA))
       
       catchment.spdf@data$PROP_AREA_IN_CATCH <- 
         round(catchment.spdf@data$PROP_AREA_IN_CATCH, 5)
@@ -438,7 +444,7 @@ BasicBiomassCatchmentCalc <-
     
     
     return(biorefineries.sptdf)
-  }
-
+    
+    }
 
 
