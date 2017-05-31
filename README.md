@@ -12,7 +12,7 @@ You are currently in the Feedstock_Agnostic main directory which is hosted by Gi
 version of the main project directory. I would recommend doing this every time you are interested 
 in checking out models, code, etc. in the directory because I am constantly making updates and frequently push these changes to GitHub.  The main project directory is also designed to be 
 an entirely self-contained ecosystem. That is, no matter where you store the directory on you local machine, all* scripts within the subdirectories should run and retrieve the data they need 
-from other subdirectories using relative filepaths. The one exception to this is the `load.R` script within the R_code subdirectory. This script was developed to initially load the raw data files required for the project (i.e. `.csv`, `.shp`, `.xls`, etc.) and convert them an R-specific
+from other subdirectories using relative filepaths. The one exception to this rule is the `load.R` script within the `Feedstock_Agnostic/R_code` subdirectory. This script was developed to initially load the raw data files required for the project (i.e. `.csv`, `.shp`, `.xls`, etc.) and convert them an R-specific
 binary data file (.RData) which could be loaded and handled more easily in subsequent processing
 steps. Since the raw data files loaded by `load.R` are too large to store on GitHub, they are
 housed separately in a `raw_data_files` subdirectory of the Google Drive's  `Feedstock_Agnostic/Analysis/feedstock_agnostic_Tyler` directory. 
