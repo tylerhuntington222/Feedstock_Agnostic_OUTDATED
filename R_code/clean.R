@@ -65,24 +65,11 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 
 ###### CLEAN BIOREFINERIES DATA ######
 
-#TODO:
-# get coords of bioref locations 
-
 # import geocoding func
+source("geocode_refineries_func.R")
 
-# merge bioref locations and attribute data
-
-# set CRS of biorefs locations SPDF
-#biorefs.spdf <- sp::spTransform(biorefs.spdf, aea.crs)
-
-# export clean binary data 
-#saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
-
-# TEMP:
-biorefs.spdf <- rgdal::readOGR(dsn = "../../raw_data_files/biorefineries.shp",
-                        layer = "biorefineries")
-
-biorefs.spdf <- sp::spTransform(biorefs.spdf, aea.crs)
+# geocode bioref locations 
+biorefs.spdf <- GeocodeLocations(bioref_profiles.df)
 
 saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
 

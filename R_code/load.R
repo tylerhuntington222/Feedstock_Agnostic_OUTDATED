@@ -52,13 +52,7 @@ rm(list=ls())
 
 # load current US biorefinery profiles (Source: Renewable Fuels Association)
 bioref_profiles.df <- 
-  read.csv("../../raw_data_files/curr_biorefinery_profiles.csv", 
-           header = T,
-           colClasses = "character")
-
-# load current biorefinery location data
-bioref_locations.df <- 
-  read.csv("../../raw_data_files/curr_biorefinery_locations.csv",
+  read.csv("../../raw_data_files/current_US_biorefineries.csv", 
            header = T,
            colClasses = "character")
 
