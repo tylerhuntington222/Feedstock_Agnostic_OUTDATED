@@ -7,7 +7,7 @@ This project aims to assess the feasibility of a hypothetical "feedstock agnosti
 The project files have been organized into a directory structure that is designed to maximize portability and reproducibility. The directory structure is also well suited for easily bundling
 project files into an R Package down the line. Here, I will provide a brief orientation to the directory and general underlying workflow.
 
-You are currently in the Feedstock_Agnostic main directory which is hosted by GitHub as a 
+You are currently in the `Feedstock_Agnostic` main directory which is hosted by GitHub as a 
 "repository" (or repo) of files. Downloading the repo as a ZIP file will give you an up-to-date
 version of the main project directory. I would recommend doing this every time you are interested 
 in checking out models, code, etc. in the directory because I am constantly making updates and frequently push these changes to GitHub.  The main project directory is also designed to be 
