@@ -69,9 +69,9 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 source("geocode_refineries_func.R")
 
 # geocode bioref locations 
-biorefs.spdf <- GeocodeLocations(bioref_profiles.df)
+biorefs.sptdf <- GeocodeLocations(bioref_profiles.df)
 
-saveRDS(biorefs.spdf, "../clean_binary_data/biorefs.spdf.RDS")
+saveRDS(biorefs.sptdf, "../clean_binary_data/biorefs.sptdf.RDS")
 
 
 ###### US COUNTY BOUNDARIES DATA ######

@@ -216,6 +216,12 @@ BasicBiomassCatchmentCalc <-
       feed_choices <- c(feed_choices, residues)
     }
     
+    if (!("residues" %in% feedstocks) & !("woody" %in% feedstocks) & 
+        !("residues" %in% feedstocks)) {
+      feed_choices <- feedstocks
+    }
+    
+    
     # make sure there are no duplicates in feed_choices vector
     feed_choices <- unique(feed_choices)
     
