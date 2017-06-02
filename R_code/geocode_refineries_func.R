@@ -30,13 +30,13 @@ GeocodeLocations <- function(data){
   #  data <- read.csv("../../raw_data_files/current_US_biorefineries.csv", 
   #                   header = T)
   
-  # load libraries
-  library(ggmap)
-  library(sp)
-  library(raster)
-  library(ggmap)
-  library(maptools)
-  library(rgdal)
+  # # load libraries
+  # library(ggmap)
+  # library(sp)
+  # library(raster)
+  # library(ggmap)
+  # library(maptools)
+  # library(rgdal)
   
   # get the address list, and append "Ireland" to the end to increase accuracy 
   # (change or remove this if your address already include a country etc.)

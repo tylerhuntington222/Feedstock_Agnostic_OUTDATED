@@ -54,7 +54,7 @@ rm(list=ls())
 
 biomass.df <- readRDS("../clean_binary_data/bt_biomass_18_30_40.df.RDS")
 
-biorefs.sptdf <- readRDS("../clean_binary_data/biorefs.spdf.RDS")
+biorefs.sptdf <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
 
 counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
 
@@ -127,11 +127,7 @@ result <-
                             radius = 60)
 
 
-print(result)
-
-
-
-###### CO-OCCURRENCE ANALYSIS
+###### CO-OCCURRENCE ANALYSIS ###### 
 
 # try for year 2018
 

@@ -45,15 +45,20 @@ csf <- function() {
   }
 }
 
+
+###### LOAD LIBRARIES ######
+
+library(ggmap)
+library(sp)
+library(raster)
+library(ggmap)
+library(maptools)
+library(rgdal)
+
 ###### SET WORKING DIRECTORY ######
 this.dir <- dirname(csf())
 setwd(this.dir)
 rm(list=ls())
-
-###### LOAD RAW BINARY DATA WORKSPACE IMAGE ######
-load("../raw_binary_data/loaded_data_workspace.RData")
-print("Raw data objects loaded into workspace:")
-print (ls())
 
 
 ###### DATA FORMATTING SETTINGS ######
@@ -63,18 +68,25 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
                +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 
                +units=m +no_defs")
 
+
 ###### CLEAN BIOREFINERIES DATA ######
 
-# import geocoding func
-source("geocode_refineries_func.R")
-
-# geocode bioref locations 
-biorefs.sptdf <- GeocodeLocations(bioref_profiles.df)
-
-saveRDS(biorefs.sptdf, "../clean_binary_data/biorefs.sptdf.RDS")
+  # load raw binary data
+  biorefs.df <- readRDS("../raw_binary_data/raw_biorefs.df.RDS")
+  
+  # import geocoding func
+  source("geocode_refineries_func.R")
+  
+  # geocode bioref locations 
+  biorefs.sptdf <- GeocodeLocations(biorefs.df)
+  
+  saveRDS(biorefs.sptdf, "../clean_binary_data/biorefs.sptdf.RDS")
 
 
 ###### US COUNTY BOUNDARIES DATA ######
+  
+  # load raw binary data
+  county_bounds.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
 
   # subset for continental US counties only
   non_cont_states <- c("02", "15", "72") 
@@ -95,22 +107,35 @@ saveRDS(biorefs.sptdf, "../clean_binary_data/biorefs.sptdf.RDS")
   # export clean binary data
   saveRDS(counties.spdf, "../clean_binary_data/counties.spdf.RDS")
 
+
 ###### US STATES BOUNDARIES ######
 
+  # load raw binary data
+  state_bounds.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  
   # export clean binary data
   saveRDS(state_bounds.spdf, "../clean_binary_data/states.spdf.RDS")
+
+
+###### US ROAD NETWORK DATA ######
   
+  # load raw binary data
+  roads.sldf <- readRDS("../raw_binary_data/raw_roads.sldf.RDS")
+  
+  # export clean binary data
+  saveRDS(state_bounds.spdf, "../clean_binary_data/roads.sldf.RDS")
+
+
 ###### BILLION TON STUDY DATA ######
-  
+
+  # load raw binary data
+  bt_all_crops.df <-
+    readRDS("../raw_binary_data/raw_bt_all_crops_18_30_40.df.RDS")
+
   # change fips column name to FIPS to match counties baselayer
   names(bt_all_crops.df)[which(names(bt_all_crops.df) == "fips")] <-  "FIPS"
-  
-  # export cleaned bt data as binary 
+
+  # export cleaned bt data as binary
   saveRDS(bt_all_crops.df, "../clean_binary_data/bt_biomass_18_30_40.df.RDS")
-
-###### US ROADS NETWORK ######
-
-  # export cleaned bt data as binary 
-  saveRDS(roads.sldf, "../clean_binary_data/roads.sldf.RDS")
 
 

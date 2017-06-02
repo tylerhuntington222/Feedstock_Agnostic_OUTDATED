@@ -56,20 +56,32 @@ bioref_profiles.df <-
            header = T,
            colClasses = "character")
 
+# export as binary data file
+saveRDS(bioref_profiles.df, "../raw_binary_data/raw_biorefs.df.RDS")
+
 # load US county boundary shapefile (Source: US Census, 20m resolution)
 county_bounds.spdf <- 
   rgdal::readOGR(dsn = "../../raw_data_files/cb_2016_us_county_20m.shp",
                  layer = "cb_2016_us_county_20m")
+
+# export as binary data file
+saveRDS(county_bounds.spdf, "../raw_binary_data/raw_county_bounds.spdf.RDS")
 
 # load US state boundary shapefile (Source: US Census, 20m resolution)
 state_bounds.spdf <- 
   rgdal::readOGR(dsn = "../../raw_data_files/cb_2016_us_state_20m.shp",
                  layer = "cb_2016_us_state_20m")
 
+# export as binary data file
+saveRDS(state_bounds.spdf, "../raw_binary_data/raw_state_bounds.spdf.RDS")
+
 # load US national road network (primary and secondary) shapefile (Source: USDT)
 roads.sldf <- 
   rgdal::readOGR(dsn = "../../raw_data_files/faf3_network.shp",
                  layer = "faf3_network")
+
+# export as binary data file
+saveRDS(roads.sldf, "../raw_binary_data/raw_roads.sldf.RDS")
 
 # load billion ton study biomass data for all crops for 2018, 2030, and 2040
 bt_all_crops.df <- 
@@ -77,9 +89,10 @@ bt_all_crops.df <-
            header = T,
            colClasses = "character")
 
+# export as binary data file
+saveRDS(bt_all_crops.df, "../raw_binary_data/raw_bt_all_crops_18_30_40.df.RDS")
 
-# export workspace image for cleaning
-save.image(file = "../raw_binary_data/loaded_data_workspace.RData")
+
 
 
 
