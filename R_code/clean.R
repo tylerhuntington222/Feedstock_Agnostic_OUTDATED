@@ -64,9 +64,8 @@ rm(list=ls())
 ###### DATA FORMATTING SETTINGS ######
 
 # define standardized CRS for spatial data
-aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-               +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 
-               +units=m +no_defs")
+  aea.crs <- CRS(paste("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0", 
+               "+lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs"))
 
 
 ###### CLEAN BIOREFINERIES DATA ######
@@ -85,25 +84,28 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 
 ###### US COUNTY BOUNDARIES DATA ######
   
-  # load raw binary data
-  county_bounds.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  # load raw binary data for counties
+  counties.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  
+  # set counties to standardized CRS
+  counties.spdf <- spTransform(counties.spdf, aea.crs)
+  
+  # load state fips key
+  fips.df <- readRDS("../raw_binary_data/raw_state_fips_key.df.RDS")
+  
+  # add state abbrevs to counties df
+  counties.spdf <- sp::merge(counties.spdf, fips.df, by = "STATEFP")
 
   # subset for continental US counties only
   non_cont_states <- c("02", "15", "72") 
-  county_bounds.spdf <- subset(county_bounds.spdf, 
-                               !(paste(county_bounds.spdf$STATEFP) 
+  counties.spdf <- subset(counties.spdf, 
+                               !(paste(counties.spdf$STATEFP) 
                                  %in% non_cont_states))
   
   # change GEOID column to FIPS code to match BT dataset
-  names(county_bounds.spdf@data)[which(names(county_bounds.spdf@data) == 
+  names(counties.spdf@data)[which(names(counties.spdf@data) == 
           "GEOID")] <- "FIPS"
-  
-  # rename var for simplicity in subsequent analysis
-  counties.spdf <- county_bounds.spdf
-  
-  # set CRS
-  counties.spdf <- spTransform(counties.spdf, aea.crs)
-  
+
   # export clean binary data
   saveRDS(counties.spdf, "../clean_binary_data/counties.spdf.RDS")
 
@@ -111,10 +113,13 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 ###### US STATES BOUNDARIES ######
 
   # load raw binary data
-  state_bounds.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  states.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  
+  # set counties to standardized CRS
+  states.spdf <- spTransform(states.spdf, aea.crs)
   
   # export clean binary data
-  saveRDS(state_bounds.spdf, "../clean_binary_data/states.spdf.RDS")
+  saveRDS(states.spdf, "../clean_binary_data/states.spdf.RDS")
 
 
 ###### US ROAD NETWORK DATA ######
@@ -123,7 +128,7 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
   roads.sldf <- readRDS("../raw_binary_data/raw_roads.sldf.RDS")
   
   # export clean binary data
-  saveRDS(state_bounds.spdf, "../clean_binary_data/roads.sldf.RDS")
+  saveRDS(roads.sldf, "../clean_binary_data/roads.sldf.RDS")
 
 
 ###### BILLION TON STUDY DATA ######
@@ -137,5 +142,15 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5
 
   # export cleaned bt data as binary
   saveRDS(bt_all_crops.df, "../clean_binary_data/bt_biomass_18_30_40.df.RDS")
+  
+  
+###### NLCD DATA ######
+  
+  # load raw binary data
+  nlcd.ras <-
+    readRDS("../raw_binary_data/raw_nlcd.ras.RDS")
+  
+  # export cleaned bt data as binary
+  saveRDS(nlcd.ras, "../clean_binary_data/nlcd.ras.RDS")
 
 

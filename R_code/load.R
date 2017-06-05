@@ -50,6 +50,11 @@ this.dir <- dirname(csf())
 setwd(this.dir)
 rm(list=ls())
 
+
+# Load libraries
+library(raster)
+
+
 # load current US biorefinery profiles (Source: Renewable Fuels Association)
 bioref_profiles.df <- 
   read.csv("../../raw_data_files/current_US_biorefineries.csv", 
@@ -59,7 +64,7 @@ bioref_profiles.df <-
 # export as binary data file
 saveRDS(bioref_profiles.df, "../raw_binary_data/raw_biorefs.df.RDS")
 
-# load US county boundary shapefile (Source: US Census, 20m resolution)
+# load US county boundary shapefile (Source: US Census TIGER/Line)
 county_bounds.spdf <- 
   rgdal::readOGR(dsn = "../../raw_data_files/cb_2016_us_county_20m.shp",
                  layer = "cb_2016_us_county_20m")
@@ -67,7 +72,7 @@ county_bounds.spdf <-
 # export as binary data file
 saveRDS(county_bounds.spdf, "../raw_binary_data/raw_county_bounds.spdf.RDS")
 
-# load US state boundary shapefile (Source: US Census, 20m resolution)
+# load US state boundary shapefile (Source: US Census TIGER/Line)
 state_bounds.spdf <- 
   rgdal::readOGR(dsn = "../../raw_data_files/cb_2016_us_state_20m.shp",
                  layer = "cb_2016_us_state_20m")
@@ -83,6 +88,30 @@ roads.sldf <-
 # export as binary data file
 saveRDS(roads.sldf, "../raw_binary_data/raw_roads.sldf.RDS")
 
+
+# load state fips key data
+state_fips_key.df <- read.csv("../../raw_data_files/state_fips_key.csv", 
+                               header = T,
+                               colClasses = "character")
+
+# export as binary data file
+saveRDS(state_fips_key.df, "../raw_binary_data/raw_state_fips_key.df.RDS")
+
+# load NLCD raster file
+nlcd.ras <- 
+  raster("../../raw_data_files/nlcd_2011_landcover_2011_edition_2014_10_10.img")
+
+# export as binary data
+saveRDS(nlcd.ras, "../raw_binary_data/raw_nlcd.ras.RDS")
+
+# load CropScape raster file
+cropscape.ras <- 
+  raster("../../raw_data_files/2016_30m_cdls.img")
+
+# export as binary data
+saveRDS(cropscape.ras, "../raw_binary_data/cropscape.ras.RDS")
+
+
 # load billion ton study biomass data for all crops for 2018, 2030, and 2040
 bt_all_crops.df <- 
   read.csv("../../raw_data_files/bt_biomass_yrs_18_30_40.csv", 
@@ -91,8 +120,5 @@ bt_all_crops.df <-
 
 # export as binary data file
 saveRDS(bt_all_crops.df, "../raw_binary_data/raw_bt_all_crops_18_30_40.df.RDS")
-
-
-
 
 

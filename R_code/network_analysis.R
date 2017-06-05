@@ -1,6 +1,7 @@
+
 #-----------------------------------------------------------------------------#
-# exploratory_GIS_analysis.R
-# Type: R analysis script
+# network analysis.R
+# Type: R cleaning script
 
 # AUTHOR:
 # Tyler Huntington, 2017
@@ -8,7 +9,7 @@
 # Project: Feedstock Agnostic Biorefinery Study
 
 # PURPOSE:
-# A script to perform exploratory feedstock supply analysis
+# A script to perform preliminary feedstock supply analysis
 
 
 # SIDE-EFFECTS:
@@ -58,9 +59,4 @@ biorefs.sptdf <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
 
 counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
 
-# source basic_biomass_catchment_calc.R function
-source("biomass_supply_buffer_func.R")
-
-
-
-
+states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")

@@ -1,0 +1,35 @@
+
+DATASET DOCUMENTATION
+
+
+2016 CropScape and Cropland Data Layer
+Source: USDA National Agricultural Statistics Service
+url: https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php
+filename in raw_data_files directory: "2016_30m_cdls"
+
+2011 National Land Cover Database (NLCD)
+Source: USGS Multi-Resolution Land Characteristics Consortium
+url: https://www.mrlc.gov/nlcd11_data.php
+filename in raw_data_files directory: nlcd_2011
+Spatial: Yes
+Datum: NAD83
+Projection: Albers Conical Equal Area
+Notes:
+- Raster value 82 corresponds to cultivated cropland
+- Raster value 81 corresponds to pasture
+-
+
+2016 US Biorefinery Locations
+
+
+US State FIPS Codes Listings
+url: https://www.mcc.co.mercer.pa.us/dps/state_fips_code_listing.htm
+
+US County Boundaries
+Source: US Census TIGER/Line
+url: https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2016&layergroup=Counties+%28and+equivalent%29
+Spatial: Yes
+Datum: NAD83
+Projection: None, geographic
+Notes:
+ - The TIGER/Line coordinate system is hardcoded to NAD83 lat/long degrees.

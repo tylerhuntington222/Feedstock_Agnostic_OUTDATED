@@ -1,18 +1,24 @@
 #-----------------------------------------------------------------------------#
-# analysis.R
-# Type: R cleaning script
+# feedstock_buffer_analysis.R
+# Type: R analysis script
 
 # AUTHOR:
 # Tyler Huntington, 2017
 # JBEI Sustainability Research Group
 # Project: Feedstock Agnostic Biorefinery Study
+# PI: Corinne Scown
 
 # PURPOSE:
-# A script to perform preliminary feedstock supply analysis
+# A script to perform preliminary feedstock supply analysis using a simple 
+# buffering method. 
 
+# SECTIONS
+# 1. ANALYZE SUPPLY DISTRIBUTIONS FOR EXISTING US BIOREFS
+# 2. FEEDSTOCK BLEND ANALYSIS
 
 # SIDE-EFFECTS:
-# 
+# plots matrix total feedstock supply distributions for existing US biorefs
+# plots supply/co-supply matrix for a specified year, scenario and set of feeds
 
 #-----------------------------------------------------------------------------#
 
@@ -61,10 +67,103 @@ counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
 states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")
 
 
-# Test out basic_biomass_catchment_calc.R function
+# load buffering function
 source("biomass_supply_buffer_func.R")
 
-# set feedstocks to include in models
+
+###### 1. ANALYZE SUPPLY DISTRIBUTIONS FOR EXISTING US BIOREFS ######
+
+# set data needed for buffering function
+datasets <- list(biomass.df, counties.spdf, biorefs.sptdf)
+
+# set feedstocks to model
+feeds <- c("residues", "herb", "woody") 
+
+# init years to model
+years <- c(2018, 2030, 2040)
+
+# init scenarios to model
+scenarios <- c("Basecase, all energy crops",
+               "2% yield inc.", 
+               "3% yield inc.",
+               "4% yield inc."
+)
+
+# init price per dry ton parameter
+price_per_dt <- 80
+
+# init empty list to store resulting dfs
+result.lst <- list(NULL)
+
+# init index counter var for slotting dfs in result list
+i = 1
+
+# iterate over scenarios selected
+for (s in scenarios) {
+  
+  # iterate over years selected
+  for (y in years){
+    run.name <- paste(substr(s, 1, 2), y, sep = "_")
+    assign(run.name, 
+           (BasicBiomassCatchmentCalc(data = datasets,
+                                      year = y, 
+                                      scenario = s, 
+                                      feedstocks = feeds,
+                                      price = price_per_dt,
+                                      radius = 60)))
+    result.lst[[i]] <- eval(as.name(run.name))
+    i = i + 1
+  }
+}
+
+# #TEMP: join all SPTDFS into list
+# j = 1
+# for (y in years) {
+#   # iterate over scenarios
+#   for (s in scenarios){
+#   data.set <- paste(substr(s, 1, 2), y, sep = "_")
+#   result.lst[[j]] <- eval(as.name(data.set))
+#   j = j+1
+#   }
+# }
+
+
+
+# set up plotting matrix template
+plot.new()
+par(mar=c(5,5,3,4))
+par(mfrow=c(4,3))
+
+# plot matrix of histograms of total avail biomass for US refinery locations
+# under diff scenarios in years 2018, 2030 and 2040
+for (index in seq_along(result.lst)) {
+  hist(result.lst[[index]]@data$All_Feedstocks/1000000,
+       breaks = 30, 
+       main = " ",
+       col = "light blue",
+       ylim = c(0,34),
+       #xlim = c(0,25),
+       xlab = "Total Available Biomass (M dt)",
+       ylab = "Count")
+  #abline(v = median(result.lst[[index]]@data$All_Feedstocks)/1000000, 
+  #col = "red" )
+  med <- (median(result.lst[[index]]@data$All_Feedstocks)/1000000)
+  segments(x0=med, # Value from x (initial)
+           x1=med, # Value to x (final)
+           y0=0, # Value from y (initial)
+           y1=29, # Value to y (final)
+           col='red')
+  
+  text(x = med, y = 33, as.character(round(med, 2), adj = c(0.2), cex = 0.1)) 
+}
+
+
+
+
+###### 2. FEEDSTOCK BLEND ANALYSIS ###### 
+
+
+# set feedstocks to include in blend analysis
 #feeds <- c("residues", "herb", "woody") 
 
 feeds <- c("Barley straw"
@@ -127,7 +226,7 @@ result <-
                             radius = 60)
 
 
-###### CO-OCCURRENCE ANALYSIS ###### 
+
 
 # try for year 2018
 
