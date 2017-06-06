@@ -50,7 +50,7 @@ WeightedCentroids <- function (poly.data, raster.data) {
                 function(m){c(weighted.mean(m[,3],m[,2]), 
                               weighted.mean(m[,4],m[,2]))})
   
-  # conver to SpatialPoints object
+  # convert to SpatialPoints object
   centrs.sp <- SpatialPoints(centrs.mx)
   
   # project to CRS of polys layer

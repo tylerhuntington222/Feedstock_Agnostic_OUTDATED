@@ -54,19 +54,19 @@ csf <- function() {
 source("weighted_centroids_fun.R")
 
 
-###### INSTALL PACKAGES IF NECCESSARY ######
-install.packages("raster")
-install.packages("spdep")
-install.packages("maptools")
-install.packages("rgdal")
-install.packages("plyr")
-install.packages("geosphere")
-install.packages("rgeos")
-install.packages("raster")
-install.packages("spdep")
-install.packages("maptools")
-install.packages("rgdal")
-install.packages("plyr")
+# ###### INSTALL PACKAGES IF NECCESSARY ######
+# install.packages("raster")
+# install.packages("spdep")
+# install.packages("maptools")
+# install.packages("rgdal")
+# install.packages("plyr")
+# install.packages("geosphere")
+# install.packages("rgeos")
+# install.packages("raster")
+# install.packages("spdep")
+# install.packages("maptools")
+# install.packages("rgdal")
+# install.packages("plyr")
 
 
 ###### LOAD LIBRARIES ######
@@ -83,6 +83,9 @@ library(maptools)
 library(rgdal)
 library(plyr)
 
+# start timer
+system.time({
+  
 ###### LOAD DATA ######
 
 # load county boundaries data
@@ -94,6 +97,14 @@ nlcd.ras <-
 
 # TEMP: crop counties layer to Iowa for testing functionality
 #counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME == "IOWA")
+
+# TEMP: crop counties layer to US Midwest states only
+midwest.states <- c("IL", "IN", "IA", "KS", "MI", 
+                    "MN", "MS", "NE", "ND", 
+                    "OH", "SD", "WI")
+
+counties.spdf <- subset(counties.spdf, 
+                        counties.spdf$STATEABBREV %in% midwest.states)
 
 ###### PREP DATA #######
 
@@ -121,6 +132,7 @@ cntrs.sptdf <- WeightedCentroids(counties.spdf, mask)
 # export result as binary data file in output directory
 saveRDS(cntrs.sptdf, "../output/wtd_county_cntroids.sptdf.RDS")
 
+}) # end timer
 
 
 
