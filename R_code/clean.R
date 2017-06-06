@@ -79,6 +79,13 @@ rm(list=ls())
   # geocode bioref locations 
   biorefs.sptdf <- GeocodeLocations(biorefs.df)
   
+  # set to standardied CRS
+  biorefs.sptdf <- spTransform(biorefs.sptdf, aea.crs)
+  
+  # add RID column
+  biorefs.sptdf@data$RID <- rownames(biorefs.sptdf@data)
+  
+  # export as binary data file
   saveRDS(biorefs.sptdf, "../clean_binary_data/biorefs.sptdf.RDS")
 
 
@@ -113,7 +120,7 @@ rm(list=ls())
 ###### US STATES BOUNDARIES ######
 
   # load raw binary data
-  states.spdf <- readRDS("../raw_binary_data/raw_county_bounds.spdf.RDS")
+  states.spdf <- readRDS("../raw_binary_data/raw_state_bounds.spdf.RDS")
   
   # set counties to standardized CRS
   states.spdf <- spTransform(states.spdf, aea.crs)
@@ -126,6 +133,9 @@ rm(list=ls())
   
   # load raw binary data
   roads.sldf <- readRDS("../raw_binary_data/raw_roads.sldf.RDS")
+  
+  # set to standardized CRS
+  roads.sldf <- spTransform(roads.sldf, aea.crs)
   
   # export clean binary data
   saveRDS(roads.sldf, "../clean_binary_data/roads.sldf.RDS")
