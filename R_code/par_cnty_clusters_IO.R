@@ -1,25 +1,31 @@
-#-----------------------------------------------------------------------------#
-# **********_analysis.R
-# Type: R analysis script
+#------------------------------------------------------------------------------#
+# par_cnty_clusters_IO.R
 
 # AUTHOR:
 # Tyler Huntington, 2017
-# JBEI Sustainability Research Group
-# Project: Feedstock Agnostic Biorefinery Study
+
+# JBEI Sustainability Team
+# Feedstock Agnostic Study
+# PI: Corinne Scown PhD
 
 # PURPOSE:
-# A script to perform preliminary feedstock supply analysis
+# An analysis script to find the spatial clusters of crop and 
+# pasture land within  each US county. Weighted centroids will serve as the 
+# nodes in a network analysis for calculating potential feedstock supplies 
+# within range of existing US biorefinery locations. 
 
+# OUTPUTS:
+# An object of class SpatialPointsDataFrame in which each point 
+# represents the weighted centroid of a county in the contiguous US.
 
-# SIDE-EFFECTS:
-# 
-
-#-----------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 ###### BASIC FUNCTIONS ######
 
 # a basic function to get the filepath of the current script
 csf <- function() {
+  # install packages
+  #install.packages("rstudioapi")
   # adapted from http://stackoverflow.com/a/32016824/2292993
   cmdArgs = commandArgs(trailingOnly = FALSE)
   needle = "--file="
@@ -50,12 +56,5 @@ this.dir <- dirname(csf())
 setwd(this.dir)
 rm(list=ls())
 
-###### LOAD CLEANED DATA ######
-
-biomass.df <- readRDS("../clean_binary_data/bt_biomass_18_30_40.df.RDS")
-
-biorefs.sptdf <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
-
-counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
-
-states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")
+###### SOURCE LOCAL FUNCTIONS #######
+source("CalcWeightedCentroids_fun.R")

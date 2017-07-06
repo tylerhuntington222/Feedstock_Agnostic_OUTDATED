@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------#
 # network analysis.R
-# Type: R cleaning script
+# Type: R analysis script
 
 # AUTHOR:
 # Tyler Huntington, 2017
@@ -9,7 +9,7 @@
 # Project: Feedstock Agnostic Biorefinery Study
 
 # PURPOSE:
-# A script to perform preliminary feedstock supply analysis
+# A script to perform preliminary feedstock supply analysis.
 
 
 # SIDE-EFFECTS:
@@ -71,8 +71,6 @@ library(maptools)
 library(rgdal)
 library(plyr)
 library(igraph)
-
-install.packages("shp2graph")
 library(shp2graph)
 
 ###### LOAD CLEANED DATA ######

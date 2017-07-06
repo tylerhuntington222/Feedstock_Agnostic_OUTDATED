@@ -24,6 +24,11 @@
 
 WeightedCentroids <- function (poly.data, raster.data) {
   
+  
+  #TEMP: set function param vals for testing purposes
+  #raster.data <- mask  
+  #poly.data <- counties.spdf
+  
   ###### LOAD LIBRARIES ######
   library(raster)
   library(spdep)
@@ -43,7 +48,7 @@ WeightedCentroids <- function (poly.data, raster.data) {
   
   # add xy coords
   in.cells.xy.ls <- 
-    llply(in.cells.ls, function(x) cbind(x, xyFromCell(mask.ras, x[,"cell"])))
+    llply(in.cells.ls, function(x) cbind(x, xyFromCell(raster.data, x[,"cell"])))
   
   # find weighted centroids
   centrs.mx = laply(in.cells.xy.ls, 
@@ -51,31 +56,39 @@ WeightedCentroids <- function (poly.data, raster.data) {
                               weighted.mean(m[,4],m[,2]))})
   
   # convert to SpatialPoints object
-  centrs.sp <- SpatialPoints(centrs.mx)
+  centrs.spt <- SpatialPoints(centrs.mx)
   
   # project to CRS of polys layer
-  proj4string(centrs.sp) <- crs(polys.data)
+  proj4string(centrs.spt) <- crs(poly.data)
   
-  # extract vals of containing polys and convert to SPTDF
-  centrs.sptdf <- extract(polys, centr.sp)
+  # extract vals of containing polys 
+  centrs.data <- extract(poly.data, centrs.spt)
+  
+  # convert to SPTDF
+  centrs.sptdf <- SpatialPointsDataFrame(centrs.mx, centrs.data)
   
   # subset DF for relevant cols
   centrs.sptdf <- 
     subset(centrs.sptdf, select = c("NAME", "FIPS", "STATEABBREV", "STATENAME"))
+  
+  # set CRS
+  proj4string(centrs.sptdf) <- crs(poly.data)
   
   return(centrs.sptdf)
 }
   
 # # TEMP: plotting calls for function testing and development
 # plot(states.spdf, col = "red", add = F)
-# plot(counties.spdf, add = T, col = "blue")
+#plot(counties.spdf, add = F, col = "blue")
+#plot(centrs.sptdf, add = T, col = "black")
 # plot(iowa.spdf, col = rgb(1,0,0,0.5), add = F)
 # plot(mx.ras, add = F)
 # plot(nlcd.ras, add = F)
 # plot(lee.spdf, add = F)
 # head(counties.spdf@data)
 # plot(gcent, add = T, col = 'blue')
-# plot(tcentrs, add =T, col = "black", pch = 4)
+#t.cents
+#plot(t.cents, add =T, col = "green", pch = 4)
 # plot(mask)
 # 
 

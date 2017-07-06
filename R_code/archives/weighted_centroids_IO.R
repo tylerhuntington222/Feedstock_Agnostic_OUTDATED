@@ -115,6 +115,9 @@ system.time({
   states <- c( "IDAHO", "IOWA", "LOUISIANA", "NEW YORK", "NORTH CAROLINA",
               "OREGON", "SOUTH CAROLINA", "UTAH", "WASHINGTON", "WYOMING")
   
+  counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME %in% states)
+  
+  
   # big.states <- c("TEXAS", "CALIFORNIA",  "MONTANA", "ARIZONA", "NEW MEXICO", "NEVADA", "COLORADO")
   
   #states <- "NEW JERSEY"

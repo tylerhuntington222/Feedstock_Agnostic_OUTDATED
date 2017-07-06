@@ -113,19 +113,23 @@ system.time({
   
   
   states <- c( "IDAHO", "IOWA", "LOUISIANA", "NEW YORK", "NORTH CAROLINA",
-              "OREGON", "SOUTH CAROLINA", "UTAH", "WASHINGTON", "WYOMING")
+               "OREGON", "SOUTH CAROLINA", "UTAH", "WASHINGTON", "WYOMING")
+  
+  counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME %in% states)
+  
   
   # big.states <- c("TEXAS", "CALIFORNIA",  "MONTANA", "ARIZONA", "NEW MEXICO", "NEVADA", "COLORADO")
   
   #states <- "NEW JERSEY"
   
-  # states <- unique(counties.spdf$STATENAME)
+  counties <- unique(counties.spdf$NAME)
   
-  for (state in states[1:length(states)]){
+  #for (county in counties[1:length(counties)]){
+  for (county in counties[1:3]){
     
-    print(paste("Calculating weighted centroids for", state, sep = ": "))
+    print(paste("Calculating weighted centroids for", county, sep = ": "))
     # rop counties layer to particular satte
-    s.counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME == state)
+    s.counties.spdf <- subset(counties.spdf, counties.spdf$NAME == county)
     
     # # TEMP: crop counties layer to US Midwest states only
     # midwest.states <- c("IL", "IN", "IA", "KS", "MI",
@@ -146,19 +150,20 @@ system.time({
     
     ###### PREP DATA #######
     
-    print("cropping extent of NLCD layer to state...")
+    print("cropping extent of NLCD layer to county...")
     # crop extent of nlcd RasterLayer to extent of US counties layer
-    tempfile <- paste("../output/cropped_", state, "_raster", sep = "")
+    tempfile <- paste("../output/counties/cropped_", 
+                      county, "_raster", sep = "")
     crop(nlcd, s.counties.spdf, filename = tempfile, overwrite = T)
     
     # re-load raster layer into workspace
-    state.nlcd <- raster(tempfile)
+    county.nlcd <- raster(tempfile)
     
     # re-project mask raster to standardized projection
-    proj4string(state.nlcd) <- crs(s.counties.spdf)
+    proj4string(county.nlcd) <- crs(s.counties.spdf)
     
     # set extent of mask to extent of county polys
-    extent(state.nlcd) <- extent(s.counties.spdf)
+    extent(county.nlcd) <- extent(s.counties.spdf)
     
     print("updating vals of raster layer...")
     # make mask raster with binary vals based on crop/pasture (1) or other (0)
@@ -168,29 +173,29 @@ system.time({
       return(x)
     }
     # 
-    # calc(state.nlcd, UpdateVals, filename = tempfile, overwrite = T)
+    # calc(county.nlcd, UpdateVals, filename = tempfile, overwrite = T)
     # 
     # UpdateVals <- function(x){
     #   x[x==81 | x == 82] <- 1;
     #   return(x)
-      
-    calc(state.nlcd, UpdateVals, filename = tempfile, overwrite = T)
-      
+    
+    calc(county.nlcd, UpdateVals, filename = tempfile, overwrite = T)
+    
     # create matrix from mask raster layer
-    #state.nlcd <- as.matrix(state.nlcd)
+    #county.nlcd <- as.matrix(county.nlcd)
     
     # make mask raster with binary vals based on crop/pasture (1) or other (0)
-    #mask <- (state.nlcd  == 81 | state.nlcd  == 82)
+    #mask <- (county.nlcd  == 81 | county.nlcd  == 82)
     
-   
-   
+    
+    
     # write and reload mask file
     # mask <- writeRaster(mask, filename = tempfile, overwrite = T)
     # mask <- raster(mask)
     
     # ###### COMPUTE TRUE CENTROIDS ######
     # t.cents <- gCentroid(s.counties.spdf, byid = T)
-      
+    
     ###### COMPUTE WEIGHTED CENTROIDS ######
     cntrs.sptdf <- CalcWeightedCentroids(s.counties.spdf, tempfile)
     
@@ -198,10 +203,11 @@ system.time({
     # saveRDS(cntrs.sptdf, "../output/wtd_cntroids.sptdf.RDS")
     
     # saveRDS(cntrs.sptdf, "../output/wtd_county_cntroids.sptdf.RDS")
-    saveRDS(cntrs.sptdf, paste("../output/", state, "_wtd_cntroids.sptdf.RDS", sep = ""))
-  
+    saveRDS(cntrs.sptdf, paste("../output/counties/", 
+                               county, "_wtd_cntroids.sptdf.RDS", sep = ""))
+    
   }
-
+  
 }) # end timer
 
 

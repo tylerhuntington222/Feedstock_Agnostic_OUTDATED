@@ -89,6 +89,9 @@ library(spdep)
 library(maptools)
 library(rgdal)
 library(plyr)
+library(foreach)
+library(parallel)
+library(doParallel)
 
 # start timer
 system.time({
@@ -100,7 +103,7 @@ system.time({
   
   # load NLCD raster
   nlcd <- 
-    raster("../../raw_data_files/nlcd_2011_landcover_2011_edition_2014_10_10.img")
+    raster("../../../../../../Desktop/very_large_files/nlcd_2011_landcover_2011_edition_2014_10_10.img")
   
   # # calculate weighted centroids per county, iterating over states
   # 
@@ -113,19 +116,60 @@ system.time({
   
   
   states <- c( "IDAHO", "IOWA", "LOUISIANA", "NEW YORK", "NORTH CAROLINA",
-              "OREGON", "SOUTH CAROLINA", "UTAH", "WASHINGTON", "WYOMING")
+               "OREGON", "SOUTH CAROLINA", "UTAH", "WASHINGTON", "WYOMING",
+               "TEXAS", "CALIFORNIA",  "MONTANA", "ARIZONA", "NEW MEXICO", 
+               "NEVADA", "COLORADO")
+  
+  counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME %in% states)
+  
   
   # big.states <- c("TEXAS", "CALIFORNIA",  "MONTANA", "ARIZONA", "NEW MEXICO", "NEVADA", "COLORADO")
   
   #states <- "NEW JERSEY"
   
-  # states <- unique(counties.spdf$STATENAME)
+  # create vector of counties to iterate over
+  all.fips <- unique(counties.spdf$FIPS)
+  all.fips <- as.character(all.fips)
   
-  for (state in states[1:length(states)]){
+  # determine which all.fips have already been done
+  done.files <- list.files("../output/counties")
+  
+  # define function to get fips code of county out of filename
+  GetFips <- function(x) {
+    scores <- which(strsplit(x, "")[[1]] == "_")
+    s1 <- scores[1]
+    s2 <- scores[2]
+    fips <- substr(x, start = s1+1, stop = s2-1)
+    return(fips)
+  }
+  
+  done.fips <- lapply(done.files, FUN = GetFips)
+  done.fips <- unlist(done.fips)
+  done.fips <- done.fips[!is.na(done.fips)]
+  
+
+  
+  # find not.done.counties fips codes
+  key <- !(all.fips %in% done.fips)
+  not.done.fips <- all.fips[key]
+  
+  
+  subset(counties.spdf, counties.spdf$FIPS %in% not.done.fips)@data
+  
+  issue.fips <- c("36061", "06075","32013")
+  
+  # TEMP
+  # not.done.fips <- "36061"
+  
+  
+  not.done.fips <- subset(not.done.fips, !(not.done.fips %in% issue.fips))
+  
+  #for (county in counties[1:length(counties)]){
+  for (fips in not.done.fips[1:length(not.done.fips)]) {
     
-    print(paste("Calculating weighted centroids for", state, sep = ": "))
-    # rop counties layer to particular satte
-    s.counties.spdf <- subset(counties.spdf, counties.spdf$STATENAME == state)
+    print(paste("Calculating weighted centroids for", fips, sep = ": "))
+    # rop counties layer to particular state
+    s.counties.spdf <- subset(counties.spdf, counties.spdf$FIPS == fips)
     
     # # TEMP: crop counties layer to US Midwest states only
     # midwest.states <- c("IL", "IN", "IA", "KS", "MI",
@@ -146,62 +190,48 @@ system.time({
     
     ###### PREP DATA #######
     
-    print("cropping extent of NLCD layer to state...")
+    print("cropping extent of NLCD layer to county...")
     # crop extent of nlcd RasterLayer to extent of US counties layer
-    tempfile <- paste("../output/cropped_", state, "_raster", sep = "")
+    tempfile <- paste("../../../../../../Desktop/lfs_temp/cropped_", 
+                      fips, "_raster", sep = "")
     crop(nlcd, s.counties.spdf, filename = tempfile, overwrite = T)
     
     # re-load raster layer into workspace
-    state.nlcd <- raster(tempfile)
+    county.nlcd <- raster(tempfile)
     
     # re-project mask raster to standardized projection
-    proj4string(state.nlcd) <- crs(s.counties.spdf)
+    proj4string(county.nlcd) <- crs(s.counties.spdf)
     
     # set extent of mask to extent of county polys
-    extent(state.nlcd) <- extent(s.counties.spdf)
+    extent(county.nlcd) <- extent(s.counties.spdf)
     
-    print("updating vals of raster layer...")
-    # make mask raster with binary vals based on crop/pasture (1) or other (0)
-    UpdateVals <- function(x){
-      x[x==81 | x == 82] <- 1;
-      x[x!=1] <- 0
-      return(x)
+    if (is.null(county.nlcd[county.nlcd == 81 | county.nlcd == 82])) {
+      # ###### COMPUTE TRUE CENTROIDS ######
+      cntrs.sptdf <- gCentroid(s.counties.spdf, byid = T)
+    } else {
+      
+      print("updating vals of raster layer...")
+      # make mask raster with binary vals based on crop/pasture (1) or other (0)
+      UpdateVals <- function(x){
+        x[x==81 | x == 82] <- 1
+        x[x != 1] <- 0
+        return(x)
+      }
+      
+      calc(county.nlcd, UpdateVals, filename = tempfile, overwrite = T)
+      
+      ###### COMPUTE WEIGHTED CENTROIDS ######
+      cntrs.sptdf <- CalcWeightedCentroids(s.counties.spdf, tempfile)
+      
+      # # export result as binary data file in output directory
+      # saveRDS(cntrs.sptdf, "../output/wtd_cntroids.sptdf.RDS")
+      
     }
-    # 
-    # calc(state.nlcd, UpdateVals, filename = tempfile, overwrite = T)
-    # 
-    # UpdateVals <- function(x){
-    #   x[x==81 | x == 82] <- 1;
-    #   return(x)
-      
-    calc(state.nlcd, UpdateVals, filename = tempfile, overwrite = T)
-      
-    # create matrix from mask raster layer
-    #state.nlcd <- as.matrix(state.nlcd)
-    
-    # make mask raster with binary vals based on crop/pasture (1) or other (0)
-    #mask <- (state.nlcd  == 81 | state.nlcd  == 82)
-    
-   
-   
-    # write and reload mask file
-    # mask <- writeRaster(mask, filename = tempfile, overwrite = T)
-    # mask <- raster(mask)
-    
-    # ###### COMPUTE TRUE CENTROIDS ######
-    # t.cents <- gCentroid(s.counties.spdf, byid = T)
-      
-    ###### COMPUTE WEIGHTED CENTROIDS ######
-    cntrs.sptdf <- CalcWeightedCentroids(s.counties.spdf, tempfile)
-    
-    # # export result as binary data file in output directory
-    # saveRDS(cntrs.sptdf, "../output/wtd_cntroids.sptdf.RDS")
     
     # saveRDS(cntrs.sptdf, "../output/wtd_county_cntroids.sptdf.RDS")
-    saveRDS(cntrs.sptdf, paste("../output/", state, "_wtd_cntroids.sptdf.RDS", sep = ""))
-  
+    saveRDS(cntrs.sptdf, paste("../../../../../../Desktop/lfs_temp/fips_", 
+                               fips, "_wtd_cntroid.sptdf.RDS", sep = ""))  
   }
-
 }) # end timer
 
 

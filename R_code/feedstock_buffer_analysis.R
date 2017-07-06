@@ -71,6 +71,7 @@ states.spdf <- readRDS("../clean_binary_data/states.spdf.RDS")
 source("biomass_supply_buffer_func.R")
 
 
+
 ###### 1. ANALYZE SUPPLY DISTRIBUTIONS FOR EXISTING US BIOREFS ######
 
 # set data needed for buffering function
@@ -116,6 +117,8 @@ for (s in scenarios) {
   }
 }
 
+summary(result.lst)
+
 # #TEMP: join all SPTDFS into list
 # j = 1
 # for (y in years) {
@@ -128,6 +131,7 @@ for (s in scenarios) {
 # }
 
 
+###### PLOTTING ######
 
 # set up plotting matrix template
 plot.new()
@@ -215,8 +219,10 @@ s <- "Basecase, all energy crops"
 # init price per dry ton
 price_per_dt <- 80
 
+# collect datasets for running model
 datasets <- list(biomass.df, counties.spdf, biorefs.sptdf)
 
+# calc biosheds
 result <- 
   BasicBiomassCatchmentCalc(data = datasets,
                             year = y, 
