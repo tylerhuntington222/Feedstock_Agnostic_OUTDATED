@@ -90,6 +90,7 @@ library(parallel)
 library(doParallel)
 library(iterators)
 library(rgeos)
+library(doSNOW)
 
 
 CropCountyRaster <- function(counties.data, raster.path, fips) {
