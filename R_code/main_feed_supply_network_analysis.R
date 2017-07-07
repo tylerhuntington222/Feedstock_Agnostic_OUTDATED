@@ -88,48 +88,54 @@ source("SumBioshedFeeds_cids_fun.R")
 source("parTLCidsInRange_fun.R")
 
 
-# define parameters for BT data to use
-year <- 2018
-scenario <- "Basecase, all energy crops"
-feeds <- c("herb", "woody", "residues")
-price <- 60  # note: this is delivered price per dt 
-
-# subset BT data
-biomass.df <- BtDataSelect(biomass.data, year, scenario, feeds, price)
-
-# # calc bioshed per refinery from scratch
-# constraint <- "distance"
-# max.dist <- 50
-# catchments <- TLPointsInRange(biorefs.sptdf, centroids.data, 
-#                             constraint = constraint, max.dist = max.dist)
-
-
-# load pre-calculated bioshed data 
-range <- 50
-range.units <- "mi"
-rid.bioshed.key <- readRDS(paste0("../output/curr_ref_biosheds_",
-                                   range, range.units, ".RDS"))
-
-
-# calculate total biomass available to each bioref, given counties in range
-bioref.supplies.sptdf <- SumBioshedFeeds(counties.spdf, 
-                                         biorefs.sptdf, 
-                                         rid.bioshed.key,
-                                         biomass.df)
-
-# set name for export files
-outfile.name <- "test.run"
-
-# export attribute table as .csv
-write.csv(bioref.supplies.sptdf@data, 
-          paste0("../output/model_runs/", outfile.name))
-
-
-# export spdf as shapefile
-writeOGR(bioref.supplies.sptdf, 
-         layer = paste0("../output/model_runs/", outfile.name), 
-         driver = "ESRI Shapfile")
-
+for (yr in c(2018, 2030, 2040)) {
+  for (run.range in c(40, 50, 60)) {
+    # define parameters for BT data to use
+    year <- yr
+    scenario <- "Basecase, all energy crops"
+    feeds <- c("herb", "woody", "residues")
+    price <- 60  # note: this is delivered price per dt 
+    
+    # subset BT data
+    biomass.df <- BtDataSelect(biomass.data, year, scenario, feeds, price)
+    
+    # # calc bioshed per refinery from scratch
+    # constraint <- "distance"
+    # max.dist <- 50
+    # catchments <- TLPointsInRange(biorefs.sptdf, centroids.data, 
+    #                             constraint = constraint, max.dist = max.dist)
+    
+    
+    # load pre-calculated bioshed data 
+    range <- run.range
+    range.units <- "mi"
+    rid.bioshed.key <- readRDS(paste0("../output/curr_ref_biosheds_",
+                                       range, range.units, ".RDS"))
+    
+    
+    # calculate total biomass available to each bioref, given counties in range
+    bioref.supplies.sptdf <- SumBioshedFeeds(counties.spdf, 
+                                             biorefs.sptdf, 
+                                             rid.bioshed.key,
+                                             centroids.data,
+                                             biomass.df)
+    
+    # set name for export files
+    outfile.name <- paste0("bioref_biosheds_", run.range, "mi_", year)
+    
+    # export attribute table as .csv
+    write.csv(bioref.supplies.sptdf@data, 
+              paste0("../output/model_runs/", outfile.name, ".csv"), 
+              fileEncoding = "UTF-16LE")
+    
+    
+    # export spdf as shapefile
+    writeOGR(bioref.supplies.sptdf,
+             dsn = paste0(outfile.name, ".shp"),
+             layer = paste0("../output/model_runs/", outfile.name), 
+             driver = "ESRI Shapefile")
+  }
+}
 
 
 
