@@ -6,6 +6,7 @@ DATASET DOCUMENTATION
 Source: USDA National Agricultural Statistics Service
 url: https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php
 filename in raw_data_files directory: "2016_30m_cdls"
+metadata: hmtl file in directory with original raw data
 
 2011 National Land Cover Database (NLCD)
 Source: USGS Multi-Resolution Land Characteristics Consortium

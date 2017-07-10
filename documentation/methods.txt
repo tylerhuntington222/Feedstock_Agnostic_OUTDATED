@@ -1,3 +1,11 @@
 Methods
 
-This file will contain written documentation of the methods used for the analysis in this project. 
+This file will contain written documentation of the methods used for the
+analysis in this project.
+
+
+Workflows:
+
+# Calculating ag production hotspots
+
+start with Cropscape layer

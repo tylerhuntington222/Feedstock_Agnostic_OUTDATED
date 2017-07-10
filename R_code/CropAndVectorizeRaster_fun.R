@@ -30,39 +30,39 @@
 
 ###### BASIC FUNCTIONS ######
 
-# a basic function to get the filepath of the current script
-csf <- function() {
-  # install packages
-  #install.packages("rstudioapi")
-  # adapted from http://stackoverflow.com/a/32016824/2292993
-  cmdArgs = commandArgs(trailingOnly = FALSE)
-  needle = "--file="
-  match = grep(needle, cmdArgs)
-  if (length(match) > 0) {
-    # Rscript via command line
-    return(normalizePath(sub(needle, "", cmdArgs[match])))
-  } else {
-    ls_vars = ls(sys.frames()[[1]])
-    if ("fileName" %in% ls_vars) {
-      # Source'd via RStudio
-      return(normalizePath(sys.frames()[[1]]$fileName)) 
-    } else {
-      if (!is.null(sys.frames()[[1]]$ofile)) {
-        # Source'd via R console
-        return(normalizePath(sys.frames()[[1]]$ofile))
-      } else {
-        # RStudio Run Selection
-        # http://stackoverflow.com/a/35842176/2292993  
-        return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
-      }
-    }
-  }
-}
-
-###### SET WORKING DIRECTORY ######
-this.dir <- dirname(csf())
-setwd(this.dir)
-rm(list=ls())
+# # a basic function to get the filepath of the current script
+# csf <- function() {
+#   # install packages
+#   #install.packages("rstudioapi")
+#   # adapted from http://stackoverflow.com/a/32016824/2292993
+#   cmdArgs = commandArgs(trailingOnly = FALSE)
+#   needle = "--file="
+#   match = grep(needle, cmdArgs)
+#   if (length(match) > 0) {
+#     # Rscript via command line
+#     return(normalizePath(sub(needle, "", cmdArgs[match])))
+#   } else {
+#     ls_vars = ls(sys.frames()[[1]])
+#     if ("fileName" %in% ls_vars) {
+#       # Source'd via RStudio
+#       return(normalizePath(sys.frames()[[1]]$fileName)) 
+#     } else {
+#       if (!is.null(sys.frames()[[1]]$ofile)) {
+#         # Source'd via R console
+#         return(normalizePath(sys.frames()[[1]]$ofile))
+#       } else {
+#         # RStudio Run Selection
+#         # http://stackoverflow.com/a/35842176/2292993  
+#         return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
+#       }
+#     }
+#   }
+# }
+# 
+# ###### SET WORKING DIRECTORY ######
+# this.dir <- dirname(csf())
+# setwd(this.dir)
+# rm(list=ls())
 
 # ###### INSTALL PACKAGES IF NECCESSARY ######
 # install.packages("raster")
@@ -116,11 +116,16 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   # find raster vals for cells of a dedicated to only crop type selected
   crop <- "Corn"
   
-  rows <- which(ras.vals.df$Class_Names == "Corn")
-  id <- ras.vals.df[rows, "ID"]
-  
+  ded.rows <- which(ras.vals.df$Class_Names == "Corn")
+  ded.val <- ras.vals.df[ded.rows, "ID"]
   
   # find raster vals for cells with dual production of target crop + other
+  # for these cells, assign 0.5 to crop type col
+  dbl.rows <- grep("Corn", ras.vals.df$Class_Names)
+  dbl.rows <- dbl.rows[!(dbl.rows %in% ded.rows)]
+  dbl.val <- ras.vals.df[dbl.rows, "ID"]
+  
+  # 
   
   
   ###### PREP DATA #######
@@ -140,20 +145,23 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   # set extent of mask to extent of county polys
   extent(county.raster) <- extent(county)
   
-  new.tempfile <- paste0("../../Desktop/lfs_temp/cdl/cropped_", 
-                         fips, "_cdl_raster")
-  # write out raster
-  writeRaster(county.raster, new.tempfile, overwrite = T)
-  
-  # re-load raster layer into workspace
-  county.raster <- raster(new.tempfile)
-  
   # convert to matrix
   mx <- as.matrix(county.raster)
   
+  ## TODO make this a function
   # update vals
-  mx[mx == 81 | mx == 82] <- 1
-  mx[mx != 1] <- 0
+  
+  # RecodeVals <- function(mx, ded.vals, dbl.vals) {
+  # 
+  #   
+  #   if (val %in% ded.vals) {
+  #     return(1)
+  #   } else if (val%in% dbl.vals) {
+  #     return(0.5)
+  #   } else {
+  #     return(0)
+  #   }
+  # }
   
   # convert to raster
   county.raster <- raster(mx)
@@ -164,20 +172,18 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   # set extent of mask to extent of county polys
   extent(county.raster) <- extent(county)
   
-  # write out raster
-  writeRaster(county.raster, new.tempfile, overwrite = T)
-  
-  # re-load raster
-  ras <- raster(new.tempfile)
-  
   # convert raster cells to pts
-  ras.pts <- rasterToPoints(ras, fun=function(x){x>0})
+  ras.pts <- rasterToPoints(county.raster, fun=function(x){x>0}, spatial = T)
   
   # export point representation of raster layer
-  saveRDS(ras.pts, paste0("../../../../../../Desktop/lfs_temp/",
+  saveRDS(ras.pts, paste0("../../Desktop/lfs_temp/",
                           "raster_points/FIPS_", 
                           fips, "_ras_pts.RDS"))
 }
+
+
+
+
 
 ###### USAGE: COUNTY BY COUNTY RASTER CROP IO ######
 
@@ -185,12 +191,11 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
 
 # load county boundaries data
 counties <- readRDS("../clean_binary_data/counties.spdf.RDS")
+counties$FIPS <- as.character(counties$FIPS)
 
 # load NLCD raster
 raster.path <- (paste0("../../Desktop/very_large_files/", 
                        "/cdl/cdl_2016_30m.img"))
-
-raster(raster.path)
 
 # Initiate cluster for parallel comp
 # init cluster
@@ -206,19 +211,13 @@ foreach(fips = fips.codes[1:length(fips.codes)],
         .packages = c("raster", "rgeos", "sp")) %dopar% {
            
            
-           CropAndVectorizeCountyRaster(counties, raster.path, fips)
+           CropAndVectorizeRaster(counties, raster.path, fips)
            
          }
 
 stopCluster(cl)
 
 ###### END COUNTY BY COUNTY IO ######
-
-
-
-
-
-
 
 
 
