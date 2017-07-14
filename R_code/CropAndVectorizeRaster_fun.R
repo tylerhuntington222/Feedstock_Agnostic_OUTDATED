@@ -1,9 +1,7 @@
 # TODO:
 
 # convert to fx:
-  # steps that find the raster cell vals for a particular crop type 
-
-
+# steps that find the raster cell vals for a particular crop type 
 
 #
 
@@ -45,14 +43,14 @@
 #     ls_vars = ls(sys.frames()[[1]])
 #     if ("fileName" %in% ls_vars) {
 #       # Source'd via RStudio
-#       return(normalizePath(sys.frames()[[1]]$fileName)) 
+#       return(normalizePath(sys.frames()[[1]]$fileName))
 #     } else {
 #       if (!is.null(sys.frames()[[1]]$ofile)) {
 #         # Source'd via R console
 #         return(normalizePath(sys.frames()[[1]]$ofile))
 #       } else {
 #         # RStudio Run Selection
-#         # http://stackoverflow.com/a/35842176/2292993  
+#         # http://stackoverflow.com/a/35842176/2292993
 #         return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
 #       }
 #     }
@@ -86,7 +84,6 @@ require(maptools)
 require(rgdal)
 require(plyr)
 require(geosphere)
-require(rgeos)
 require(raster)
 require(spdep)
 require(maptools)
@@ -96,7 +93,6 @@ require(foreach)
 require(parallel)
 require(doParallel)
 require(iterators)
-require(rgeos)
 require(doSNOW)
 
 
@@ -104,7 +100,7 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   
   print(paste("Calculating weighted centroids for", fips, sep = ": "))
   
-  # crop counties layer to particular state
+  # crop counties layer to particular county
   county <- subset(counties.data, counties.data$FIPS == fips)
   
   # load raster data
@@ -113,27 +109,13 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   # get df of cell value codes
   ras.vals.df <- raster.data@data@attributes[[1]]
   
-  # find raster vals for cells of a dedicated to only crop type selected
-  crop <- "Corn"
-  
-  ded.rows <- which(ras.vals.df$Class_Names == "Corn")
-  ded.val <- ras.vals.df[ded.rows, "ID"]
-  
-  # find raster vals for cells with dual production of target crop + other
-  # for these cells, assign 0.5 to crop type col
-  dbl.rows <- grep("Corn", ras.vals.df$Class_Names)
-  dbl.rows <- dbl.rows[!(dbl.rows %in% ded.rows)]
-  dbl.val <- ras.vals.df[dbl.rows, "ID"]
-  
-  # 
-  
-  
   ###### PREP DATA #######
   
   print("cropping extent of NLCD layer to county...")
   # crop extent of nlcd RasterLayer to extent of US counties layer
   tempfile <- paste0("../../Desktop/lfs_temp/cdl/cropped_", 
-                    fips, "_cdl_raster")
+                     fips, "_cdl_raster")
+  
   raster::crop(raster.data, county, filename = tempfile, overwrite = T)
   
   # convert to raster
@@ -148,21 +130,6 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   # convert to matrix
   mx <- as.matrix(county.raster)
   
-  ## TODO make this a function
-  # update vals
-  
-  # RecodeVals <- function(mx, ded.vals, dbl.vals) {
-  # 
-  #   
-  #   if (val %in% ded.vals) {
-  #     return(1)
-  #   } else if (val%in% dbl.vals) {
-  #     return(0.5)
-  #   } else {
-  #     return(0)
-  #   }
-  # }
-  
   # convert to raster
   county.raster <- raster(mx)
   
@@ -173,13 +140,13 @@ CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
   extent(county.raster) <- extent(county)
   
   # convert raster cells to pts
-  ras.pts <- rasterToPoints(county.raster, fun=function(x){x>0}, spatial = T)
+  ras.pts <- rasterToPoints(county.raster, fun=function(x){x>0}, spatial = F)
   
   # export point representation of raster layer
   saveRDS(ras.pts, paste0("../../Desktop/lfs_temp/",
-                          "raster_points/FIPS_", 
+                          "raster_points_non_sp/FIPS_", 
                           fips, "_ras_pts.RDS"))
-}
+} 
 
 
 
@@ -199,25 +166,40 @@ raster.path <- (paste0("../../Desktop/very_large_files/",
 
 # Initiate cluster for parallel comp
 # init cluster
-no.cores <- detectCores()
-cl <- makeCluster(no.cores, type="SOCK", outfile="log.txt")
+no.cores <- detectCores() - 1
+cl <- makeCluster(no.cores, type="SOCK", outfile="../log.txt")
 registerDoSNOW(cl)
 
 # define vector of fips codes to iterate over
 fips.codes <- counties$FIPS
 
+#TEMP:
+#fips.codes <- rem
+
 #for (county in counties[1:length(counties)]){
 foreach(fips = fips.codes[1:length(fips.codes)], 
-        .packages = c("raster", "rgeos", "sp")) %dopar% {
-           
-           
-           CropAndVectorizeRaster(counties, raster.path, fips)
-           
-         }
+        .packages = c("raster", "sp")) %dopar% {
+          
+          
+          CropAndVectorizeRaster(counties, raster.path, fips)
+          
+        }
 
 stopCluster(cl)
 
 ###### END COUNTY BY COUNTY IO ######
 
+all <- as.character(unique(counties$FIPS))
 
+done <- list.files("../../Desktop/lfs_temp/raster_points/")
+
+get.fip <- function (x) {substr(x, 6, 10)}
+
+done <- unlist(llply(done, get.fip))
+
+rem <- which(!(all %in% done))
+
+rem <- all[rem]
+
+length(rem)
 

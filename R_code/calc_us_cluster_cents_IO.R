@@ -85,7 +85,7 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0
 counties <- readRDS("../clean_binary_data/counties.spdf.RDS")
 
 # load NLCD raster
-raster.path <- (paste0("../../../../../../Desktop/very_large_files/", 
+raster.path <- (paste0("../../Desktop/very_large_files/", 
                        "nlcd_2011_landcover_2011_edition_2014_10_10.img"))
 
 # fips <- "06075"
@@ -114,7 +114,7 @@ US.cluster.cents <-
   cat(sprintf("Working on FIPS: %s", fips))       
                                            
   # load point representation of ag raster for county
-  county.pts <- readRDS(paste0("../../../../../../Desktop/lfs_temp/",
+  county.pts <- readRDS(paste0("../../Desktop/lfs_temp/",
                                "raster_points/FIPS_", 
                                fips, "_ras_pts.RDS"))
   
