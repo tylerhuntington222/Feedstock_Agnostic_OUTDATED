@@ -1,0 +1,473 @@
+starting worker for localhost:11675 
+Type: EXEC 
+Loading required package: sp
+rgeos version: 0.3-23, (SVN revision 546)
+ GEOS runtime version: 3.4.2-CAPI-1.8.2 r3921 
+ Linking to sp version: 1.2-4 
+ Polygon checking: TRUE 
+
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48259"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 12027"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 36009"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 40149"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29081"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19013"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29107"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19099"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 22021"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19195"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 36117"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 17081"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31143"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 42021"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 28075"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20205"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 17035"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 51051"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 17165"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 27151"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20093"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 47131"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20087"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 28101"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48179"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 39065"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18151"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 05129"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48381"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 39097"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19123"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20025"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13225"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 35015"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 26105"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 21219"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 21017"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 27019"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18105"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 26101"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 27033"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46043"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 38075"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19001"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19175"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19037"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31041"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19165"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18023"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29073"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48393"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 39161"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 39077"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46039"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 49001"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 45077"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 30093"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29057"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48045"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48139"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 42117"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 38043"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 53063"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 12125"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18001"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48269"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 08053"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19069"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 51053"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19137"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48383"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48207"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31067"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 51680"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13113"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48349"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 27141"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48345"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 05103"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46102"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 51810"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31039"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19087"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29167"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20143"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 55025"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13109"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 21209"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 55015"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 01107"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 54033"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 12039"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 28113"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29197"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 45067"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48263"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48075"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 01017"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46015"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 21239"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18137"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31075"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 55039"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18085"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 39045"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 22037"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48085"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 53055"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48273"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31145"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13269"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 17013"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 22033"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 47109"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 18093"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 31071"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 05071"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 28139"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 55097"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 21123"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13229"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 26159"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29075"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19191"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48127"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 53021"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 40049"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48245"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 19071"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46007"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20189"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 34001"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48315"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48235"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 48109"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 20149"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 29151"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 26077"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 55089"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 38073"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 53057"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 51770"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 13315"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 24035"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 32013"
+[1] "cropping extent of NLCD layer to county..."
+Error in unserialize(node$con) : error reading from connection
+Calls: local ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+ for: 28141"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 30031"
+[1] "cropping extent of NLCD layer to county..."
+Error in unserialize(node$con) : error reading from connection
+Calls: local ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+ for: 31103"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 46019"
+[1] "cropping extent of NLCD layer to county..."
+Error in unserialize(node$con) : error reading from connection
+Calls: local ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+ for: 26149"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 40071"
+[1] "cropping extent of NLCD layer to county..."
+Type: EXEC 
+[1] "Calculating weighted centroids for: 38037"
+[1] "cropping extent of NLCD layer to county..."
+Error in unserialize(node$con) : error reading from connection
+Calls: local ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted

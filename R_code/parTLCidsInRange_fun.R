@@ -67,30 +67,29 @@
 # setwd(this.dir)
 # rm(list=ls())
 
-TLPointsInRange <- function(hubs.data, nodes.data, edges.data, constraint, 
+TLPointsInRange <- function(hubs.data, nodes.data, crop, edges.data, constraint, 
                             max.dist = NULL, max.time = NULL) {
   
-  ###### LOAD LIBRARIES #######
-  packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
-                "spatialEco", "geosphere", "doParallel", "iterators",
-                "foreach", "rgdal", "doSNOW", "snow")
-  if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-    install.packages(setdiff(packages, rownames(installed.packages())))  
-  }
+  # ###### LOAD LIBRARIES #######
+  # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
+  #               "geosphere", "doParallel", "iterators",
+  #               "foreach", "rgdal", "doSNOW", "snow")
+  # if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+  #   install.packages(setdiff(packages, rownames(installed.packages())))  
+  # }
   
-  library(ggplot2)
-  library(ggmap)
-  library(raster)
-  library(sp)
-  library(rgeos)
-  library(spatialEco)
-  library(geosphere)
-  library(doParallel)
-  library(iterators)
-  library(foreach)
-  library(rgdal)
-  library(doSNOW)
-  library(snow)
+  require(ggplot2)
+  require(ggmap)
+  require(raster)
+  require(sp)
+  require(rgeos)
+  require(geosphere)
+  require(doParallel)
+  require(iterators)
+  require(foreach)
+  require(rgdal)
+  require(doSNOW)
+  require(snow)
   
   ###### SOURCE LOCAL FUNCTIONS ######
   source("TLRoute_fun.R")
@@ -117,8 +116,10 @@ TLPointsInRange <- function(hubs.data, nodes.data, edges.data, constraint,
   rid.res <- foreach (RID = hubs.data$RID,
              .export = c("TLRoute"),
              .packages = c('doSNOW', 'foreach', 'raster', 'sp', 'rgdal',
-                           'rgeos', 'geosphere'))  %dopar% {
-                                      
+                           'rgeos', 'geosphere'),
+             .errorhandling = c("remove"))  %dopar% {
+    
+    try({                                             
     cat(paste0("\nWorking on refinery with RID: ", RID), echo = T)
     # TEMP: 
     #RID = 22
@@ -242,112 +243,148 @@ TLPointsInRange <- function(hubs.data, nodes.data, edges.data, constraint,
       output.cids.ls[[RID]] <- in.range
     }
     
-    saveRDS(in.range, paste0("../output/feedsheds/kmeans_clusters/RID_", 
-                             RID,  "_feedshed_", max.dist, "mi.RDS"))
+    # create directory if doesnt exist
+    if (!file.exists(paste0("../output/feedsheds/kmeans_clusters/",
+                     "CDL_crop_level/", crop))) {
+      system(paste0("mkdir ../output/feedsheds/kmeans_clusters/", crop))
+    }
+        
+    saveRDS(in.range, paste0("../output/feedsheds/kmeans_clusters/",
+                             crop,"/RID_", RID,
+                             "_", crop,  "_feedshed_", max.dist, "mi.RDS"))
+    
     cat(sprintf("Finished with refinery RID: %s", RID))
     
-    RID
+    in.range
+    })
                            }
-  
+
   # stop cluster
   stopCluster(cl)
   
+  # init results table
+  rid.bioshed.df <- data.frame("RID" = character(), 
+                               "BIOSHED_CIDS" = character())
+  
   # generate output df
-  output <- data.frame(I(output.cids.ls))
-  output$RID <- hubs.data$RID
-  output <- data.frame(output)
-  
-  # clean up output df
-  n <- nrow(output)
-  output <- output[((n/2)+1):n,]
-  rownames(output) <- seq(1, nrow(output))
-  output <- data.frame(output[,2], output[,1])
-  names(output) <- c("RID", "CIDS_IN_RANGE")
-  
-  return(output)
-  
+  for (r in 1:length(rid.res)) {
+    res <- rid.res[[r]]
+    if (class(res) != "try-error") {
+      par.bioshed <- as.list(res)
+      row <- data.frame(r, I(list(par.bioshed)))
+      names(row) <- c("RID", "BIOSHED_CIDS")
+      rid.bioshed.df <- rbind(rid.bioshed.df, row)
+    }
+  }
+
+  # re-arrange columns
+  output.df <- data.frame(rid.bioshed.df$BIOSHED_CIDS, rid.bioshed.df$RID)
+  names(output.df) <- c("CIDS_IN_RANGE", "RID")
+  return(output.df)
 }
 
 
 # ###### REFINERY BY REFINERY I/O ######
 # 
-# ###### LOAD LIBRARIES #######
-# packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
-#               "spatialEco", "geosphere", "doParallel", "iterators",
-#               "foreach", "doSNOW", "snow")
-# if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-#   install.packages(setdiff(packages, rownames(installed.packages())))
-# }
+# # ###### LOAD LIBRARIES #######
+# # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
+# #               "geosphere", "doParallel", "iterators",
+# #               "foreach", "doSNOW", "snow")
+# # if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+# #   install.packages(setdiff(packages, rownames(installed.packages())))
+# # }
 # 
-# library(ggplot2)
-# library(ggmap)
-# library(raster)
-# library(sp)
-# library(rgeos)
-# library(spatialEco)
-# library(geosphere)
-# library(doParallel)
-# library(iterators)
-# library(foreach)
-# library(doSNOW)
-# library(snow)
+# require(ggplot2)
+# require(ggmap)
+# require(raster)
+# require(sp)
+# require(rgeos)
+# require(geosphere)
+# require(doParallel)
+# require(iterators)
+# require(foreach)
+# require(doSNOW)
+# require(snow)
+# 
+# 
+# ###### SET PARAMS ######
+# crop <- "Sorghum"
 # 
 # ###### LOAD DATA ######
 # hubs.data <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
-# nodes.data <- readRDS("../output/US.cluster.cents.sp.RDS")
+# nodes.data <- readRDS(paste0("../output/US.cluster.cents.", crop, ".RDS"))
 # edges.data <- readRDS("../clean_binary_data/roads.sldf.RDS")
 # roads.sldf <- edges.data
 # constraint <- c("distance")
-# max.dist <- 70
+# max.dist <- 50
 # 
-# # TODO: 
-# # run with max.dist <- 30, 60
+# # TODO:
+# # run with max.dist <- 40, 60, 70
 # # for 30m run: rids.to.do <- c(22:213)
 # 
 # # # iterate over all refs
 # # rids.to.do <- hubs.data$RID
 # 
-# # iterate over particular ref
-# rids.to.do <- c(1:213)
 # 
-# # still to.do
-# #c(192, 183, 184, 147, 148, 149, 120, 166)
+# # TEMP: for determing which RIDS havent been done for a particular crop
+# crop <- "Corn"
+# dir <- (paste0("../output/feedsheds/kmeans_clusters/CDL_crop_level/", crop))
+# done.files <- list.files(dir)
+# 
+# all.files <- c("RID_1_Sorghum_feedshed_50mi.RDS")
+# for (rid in 2:213) {
+#   all.files <- c(all.files, sprintf("RID_%s_Sorghum_feedshed_50mi.RDS", rid))
+# }
+# 
+# all.files
+# 
+# not.done.files <- all.files[which(!(all.files %in% done.files))]
+# 
+# rids.to.do <- substr(not.done.files, 5, 7)
+# 
+# rids.to.do <- gsub("_","", rids.to.do)
+# 
+# rids.to.do <- c(rids.to.do[1:length(rids.to.do)])
+# 
+# 
+# # set iteration sequence over all RIDs
+# # rids.to.do <- c(1:nrow(hubs.data))
 # 
 # 
 # refs.to.do <- (hubs.data[hubs.data$RID %in% rids.to.do, ])
 # 
 # 
 # 
-# # calc feedsheds by state
-# st.counties.in.range <- TLPointsInRange(refs.to.do, nodes.data, edges.data,
-#                                         constraint = constraint,
-#                                         max.dist = max.dist)
+# # calc feedsheds
+# feedsheds <- TLPointsInRange(refs.to.do, nodes.data, crop, 
+#                              edges.data,
+#                              constraint = constraint,
+#                              max.dist = max.dist)
+#                               
 # 
-
-
-
+# 
+# 
 
 
 # ###### NOT RUN: FUNTION TESTING ######
 # 
 # ###### LOAD LIBRARIES #######
 # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
-#               "spatialEco", "geosphere", "doParallel", "iterators",
+#               "geosphere", "doParallel", "iterators",
 #               "foreach")
 # if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 #   install.packages(setdiff(packages, rownames(installed.packages())))  
 # }
 # 
-# library(ggplot2)
-# library(ggmap)
-# library(raster)
-# library(sp)
-# library(rgeos)
-# library(spatialEco)
-# library(geosphere)
-# library(doParallel)
-# library(iterators)
-# library(foreach)
+# require(ggplot2)
+# require(ggmap)
+# require(raster)
+# require(sp)
+# require(rgeos)
+# require(geosphere)
+# require(doParallel)
+# require(iterators)
+# require(foreach)
 # 
 # ###### LOAD DATA ######
 # hubs.data <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")

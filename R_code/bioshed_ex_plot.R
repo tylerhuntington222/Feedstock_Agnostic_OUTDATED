@@ -1,4 +1,4 @@
-
+*
 #-----------------------------------------------------------------------------#
 # bioshed_ex_plot.R
 # Type: R cleaning script
@@ -64,7 +64,8 @@ library(igraph)
 library(shp2graph)
 library(rgdal)
 
-
+###### SET PARAMS ######
+crop <- "Sorghum"
 
 ###### LOAD DATA ######
 
@@ -72,7 +73,7 @@ library(rgdal)
 biorefs <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
 
 # load centroids data for all US counties
-cents <- readRDS("../output/US.cluster.cents.sp.RDS")
+cents <- readRDS(paste0("../output/US.cluster.cents.", crop, ".RDS"))
 
 # load counties data
 counties <- readRDS("../clean_binary_data/counties.spdf.RDS")
@@ -86,10 +87,11 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0
 wgs84.crs <- crs("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
 # select bioref to examine
-for (rid in (129)) {
+for (rid in (1)) {
   
-  in.range.cids <- readRDS(paste0("../output/feedsheds/kmeans_clusters/RID_",
-                                  rid,"_feedshed_50mi.RDS"))
+  in.range.cids <- readRDS(paste0("../output/feedsheds/kmeans_clusters/",
+                                  "CDL_crop_level/", crop,"/RID_",
+                                  rid,"_", crop, "_feedshed_50mi.RDS"))
   
   # set to projected CRS for geoprocessing
   counties <- spTransform(counties, aea.crs)

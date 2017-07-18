@@ -1,3 +1,4 @@
+*
 #-----------------------------------------------------------------------------#
 # collate_feedsheds_IO.R
 # Type: R I/O script
@@ -59,13 +60,23 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))  
 }
 
-library(ggplot2)
-library(ggmap)
 library(raster)
 library(sp)
 library(rgeos)
 library(maptools)
 library(dplyr)
+
+
+###### SET PARAMS ######
+# specify bioshed data to read in
+
+crop <- "Sorghum"
+# range refers to the max drive dist used to determine
+# biosheds in the net analysis
+range <- 50
+
+# units are either "mi" for miles or "km" for kilometers
+range.units <- "mi"
 
 ###### LOAD CLEANED DATA ######
 biorefs <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
@@ -73,20 +84,15 @@ biorefs <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
 # init sptdf to store collated RID key
 rid.bioshed.df <- data.frame("RID" = character(), "BIOSHED_CIDS" = character())
 
-# specify bioshed data to read in
-# range refers to the max drive dist used to determine
-# biosheds in the net analysis
-range <- 60
 
-# units are either "mi" for miles or "km" for kilometers
-range.units <- "mi"
 
 
 # iterate over RID bioshed files
 for (rid in seq(1, nrow(biorefs))) {
-  par.bioshed.file <- (paste0("../output/feedsheds/kmeans_clusters/RID_", rid,
-                         "_feedshed_", range, range.units, 
-                         ".RDS"))
+  par.bioshed.file <- (paste0("../output/feedsheds/kmeans_clusters/",
+                              "CDL_crop_level/", crop, "/","RID_", 
+                              rid, "_", crop, 
+                              "_feedshed_", range, range.units, ".RDS"))
   
   # check if file exists:
   check <- file.exists(par.bioshed.file)
@@ -109,7 +115,7 @@ names(output.df) <- c("CIDS_IN_RANGE", "RID")
 
 
 # export collated biosheds
-saveRDS(output.df, paste0("../output/curr_ref_biosheds_",
+saveRDS(output.df, paste0("../output/feedsheds/curr_ref_biosheds_", crop, "_",
                                range, range.units, ".RDS"))
 
 

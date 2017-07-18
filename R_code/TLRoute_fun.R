@@ -71,23 +71,23 @@
 
 TLRoute <- function(basemap, start.coords, end.coords) {
   
-  ###### LOAD LIBRARIES #######
-  packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos", "rgdal",
-                "spatialEco", "geosphere", "shp2graph", "igraph")
-  if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-    install.packages(setdiff(packages, rownames(installed.packages())))  
-  }
+  # ###### LOAD LIBRARIES #######
+  # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos", "rgdal",
+  #               "spatialEco", "geosphere", "shp2graph", "igraph")
+  # if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+  #   install.packages(setdiff(packages, rownames(installed.packages())))  
+  # }
   
-  library(ggplot2)
-  library(ggmap)
-  library(raster)
-  library(sp)
-  library(rgeos)
-  library(spatialEco)
-  library(geosphere)
-  library(igraph)
-  library(shp2graph)
-  library(rgdal)
+  require(ggplot2)
+  require(ggmap)
+  require(raster)
+  require(sp)
+  require(rgeos)
+  require(spatialEco)
+  require(geosphere)
+  require(igraph)
+  require(shp2graph)
+  require(rgdal)
   
   ###### LOAD COORD REF SYSTEMS ######
   aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0
@@ -442,15 +442,15 @@ TLRoute <- function(basemap, start.coords, end.coords) {
 #   install.packages(setdiff(packages, rownames(installed.packages())))
 # }
 # 
-# library(ggplot2)
-# library(ggmap)
-# library(raster)
-# library(sp)
-# library(rgeos)
-# library(spatialEco)
-# library(geosphere)
-# library(igraph)
-# library(shp2graph)
+# require(ggplot2)
+# require(ggmap)
+# require(raster)
+# require(sp)
+# require(rgeos)
+# require(spatialEco)
+# require(geosphere)
+# require(igraph)
+# require(shp2graph)
 # 
 # ###### LOAD COORD REF SYSTEMS ######
 # aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0

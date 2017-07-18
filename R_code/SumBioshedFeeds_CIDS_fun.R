@@ -78,7 +78,8 @@ SumBioshedFeeds <- function(counties.data,
                             biorefs.data,
                             catchments.data,
                             centroids.data,
-                            biomass.df) {
+                            biomass.df,
+                            feed_choices) {
   
   # # TEMP: set params for local function testing 
   # counties.data <- readRDS("../clean_binary_data/counties.spdf.RDS")
@@ -101,8 +102,6 @@ SumBioshedFeeds <- function(counties.data,
   library(plyr)
   
   ###### MERGE BIOMASS FEEDSTOCK AVAILABILITIES WITH COUNTY POLYGONS ######
-  
-  feed_choices <- unique(biomass.df$Feedstock)
   
   for (feedstock_type in feed_choices) {
     # extract particular feedstocks production data at county level
@@ -154,7 +153,9 @@ SumBioshedFeeds <- function(counties.data,
   refinery_summaries.df <- data.frame(NULL)
   
   # iterate over refineries (by RID)
-  for (RID in seq(1, nrow(biorefs.data))){
+  iterators <- which(llply(catchments.data$CIDS_IN_RANGE, length) != 0)
+
+  for (RID in iterators){
     
     # get cids of counties in range of refinery
     in.range.cids <- (catchments.data[RID, 1])[[1]]
@@ -163,6 +164,7 @@ SumBioshedFeeds <- function(counties.data,
     
     in.range.fips <- lapply(in.range.cids, function(x) {substr(x, 1, 5)})
     in.range.fips <- unique(unlist(in.range.fips))
+    
     
     # subset counties layer for FIPS in range
     catchment.spdf <- counties.data[counties.data$FIPS %in% in.range.fips, ]
@@ -291,7 +293,7 @@ SumBioshedFeeds <- function(counties.data,
 # ###### LOAD LIBRARIES #######
 # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos", "rgdal")
 # if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
-#   install.packages(setdiff(packages, rownames(installed.packages())))  
+#   install.packages(setdiff(packages, rownames(installed.packages())))
 # }
 # 
 # library(ggplot2)
@@ -301,35 +303,39 @@ SumBioshedFeeds <- function(counties.data,
 # library(rgeos)
 # library(rgdal)
 # 
+# ###### SET PARAMS ######
+# 
+# crop <- "Corn"
+# range <- 50
+# range.units <- "mi"
+# 
 # ###### LOAD CLEANED DATA ######
 # 
 # # load billion ton study biomass data
 # biomass.df <- readRDS("../clean_binary_data/bt_biomass_18_30_40.df.RDS")
 # 
-# # TODO: load NREL biomass data
-# 
 # # load bioref locations data
-# biorefs.sptdf <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
+# biorefs <- readRDS("../clean_binary_data/biorefs.sptdf.RDS")
 # 
 # # load county polygons data
 # counties.spdf <- readRDS("../clean_binary_data/counties.spdf.RDS")
 # 
 # # load kmeans cluster centroids
-# centroids.data <- readRDS("../output/US.cluster.cents.sp.RDS")
+# centroids.data <- readRDS(paste0("../output/US.cluster.cents.", crop, ".RDS"))
 # 
-# # load pre-calculated bioshed data 
-# range <- 50
-# range.units <- "mi"
-# rid.bioshed.key <- readRDS( paste0("../output/curr_ref_biosheds_",
-#                                    range, range.units, ".RDS"))
+# # load pre-calculated bioshed data
+# catchments.data <- readRDS(paste0("../output/feedsheds/curr_ref_biosheds_", 
+#                                   crop, "_",
+#                                   range, range.units, ".RDS"))
 # 
 # 
 # # test run function
 # test <- SumBioshedFeeds(counties.spdf,
-#                         biorefs.spdf,
+#                         biorefs,
 #                         catchments.data,
 #                         centroids.data,
-#                         biomass.df)
-# 
+#                         biomass.df,
+#                         feedstocks = "Corn stover")
+
 
 
