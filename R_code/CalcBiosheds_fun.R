@@ -67,8 +67,9 @@
 # setwd(this.dir)
 # rm(list=ls())
 
-TLPointsInRange <- function(hubs.data, nodes.data, crop, edges.data, constraint, 
-                            max.dist = NULL, max.time = NULL) {
+CalcBiosheds <- function(hubs.data, crop, edges.data, contraint = "distance", 
+                         max.dist = NULL,
+                         max.time = NULL) {
   
   # ###### LOAD LIBRARIES #######
   # packages <- c("ggmap", "raster", "sp", "ggplot2", "rgeos",
@@ -92,7 +93,8 @@ TLPointsInRange <- function(hubs.data, nodes.data, crop, edges.data, constraint,
   require(snow)
   
   ###### SOURCE LOCAL FUNCTIONS ######
-  source("TLRoute_fun.R")
+  source("CalcDriveRoute_fun.R")
+  source("CheckIfInRange_fun.R")
   
   ###### SET GLOBAL VARS ######
   aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0
@@ -103,162 +105,106 @@ TLPointsInRange <- function(hubs.data, nodes.data, crop, edges.data, constraint,
   
   ###### PERFORM NET ANALYSIS #######
   
+  # load this crops feedstock production centroids
+  nodes.data <- readRDS(paste0("../output/data_products/US.cluster.cents.", 
+                                crop, ".RDS"))
+  
   # init output list of cid vectors
   output.cids.ls <- vector("list", length = nrow(hubs.data))
-  
   
   # initiate parallel cluster
   no_cores <- detectCores()
   cl <- makeCluster(no_cores, outfile = "")
   registerDoSNOW(cl)
   
-  # TEMP: constrain RID sequence
+  # set RID sequence
   rid.res <- foreach (RID = hubs.data$RID,
-             .export = c("TLRoute"),
-             .packages = c('doSNOW', 'foreach', 'raster', 'sp', 'rgdal',
-                           'rgeos', 'geosphere'),
-             .errorhandling = c("remove"))  %dopar% {
-    
+                      .export = c("TLRoute"),
+                      .packages = c('doSNOW', 'foreach', 'raster', 
+                                    'sp', 'rgdal',
+                                    'rgeos', 'geosphere'),
+                      .errorhandling = c("remove"))  %dopar% {
+                        
     try({                                             
-    cat(paste0("\nWorking on refinery with RID: ", RID), echo = T)
-    # TEMP: 
-    #RID = 22
-    
-    # subset for particular bioref
-    par.bioref <- hubs.data[hubs.data$RID == RID,]
-    
-    # establish search space of counties based on buffer radius
-    buff.rad <- max.dist # set radius in miles
-    buff.rad <- 1609.34*buff.rad # convert to meters
-    
-    # create buffer around focal refinery
-    buff <- gBuffer(par.bioref, byid = F, 
-                    width = buff.rad,         
-                    quadsegs = 100)
-    
-    # subset county nodes.data for those in search space
-    cand.counties <- crop(nodes.data, buff)
-    
-    # generate basemap to pass to TLRoute function
-    # clip road network to search radius of hub
-    # buff <- spTransform(buff, wgs84.crs)
-    # bmap <- crop(edges.data, buff)
-    
-    # set buffer CRS
-    #refinery_buff.sp <- spTransform(refinery_buff.sp, aea.crs)
-    
-    if (constraint == "time"){
-      # set threshold travel time (in hours)
-      max.hrs <- max.hrs
-    }
-    
-    if (constraint == "distance"){
-      # set threshold travel dist in miles
-      max.dist <- max.dist
-    }
-    
-    # define function to parallelize routing computations
-    CheckIfInRange <- function(cid, par.bioref, cand.counties, edges.data) {
+      cat(paste0("\nWorking on refinery with RID: ", RID), 
+          echo = T)
       
-      cat(sprintf("\nChecking refinery with RID: %s and centroid with CID: %s", 
-                  RID, cid), echo = T)
+      # subset for particular bioref
+      par.bioref <- hubs.data[hubs.data$RID == RID,]
       
-      # init in.range vector to store results
-      in.range <- c(NULL)
+      # establish search space of counties based on buffer radius
+      buff.rad <- max.dist # set radius in miles
+      buff.rad <- 1609.34*buff.rad # convert to meters
       
-      # TEMP:
-      #cid = 39001
+      # create buffer around focal refinery
+      buff <- gBuffer(par.bioref, byid = F, 
+                      width = buff.rad,         
+                      quadsegs = 100)
       
-      # get start point coords in WGS 84 CRS
-      par.bioref.wgs <- spTransform(par.bioref, wgs84.crs)
-      start <- par.bioref.wgs@coords[1,]
+      # subset county nodes.data for those in search space
+      cand.counties <- crop(nodes.data, buff)
       
-      # get end point
-      cand.counties.wgs <- spTransform(cand.counties, wgs84.crs)
-      end <- cand.counties.wgs[cand.counties.wgs$cid == cid, ]
-      end <- end@coords[1,]
-      names(end) <- c("long", "lat")
+      # generate basemap to pass to TLRoute function
+      # clip road network to search radius of hub
+      # buff <- spTransform(buff, wgs84.crs)
+      # bmap <- crop(edges.data, buff)
       
-      # calculate route
-      rt <- TLRoute(edges.data, start, end)
+      # set buffer CRS
+      #refinery_buff.sp <- spTransform(refinery_buff.sp, aea.crs)
       
-      # calculate total distance of route in meters
-      dist.df <- rt[[1]]
+      if (constraint == "time"){
+        # set threshold travel time (in hours)
+        max.hrs <- max.hrs
+      }
       
-      # convert to miles
-      tmiles <- dist.df$DIST.MI[1]
-      
-      #TEMP: check the distances being returned by routing function
-      #return(tmiles)
-      
-      # print dist
-      cat(paste0("\nDrive distance (miles): ", tmiles))
-      
-      # if travel time is less than thresh, save county CIDs to in.range
-      # if (constraint == "time"){
-      #   if (thrs <= max.hrs){
-      #     return(cid)
-      #   }
-      # }
       if (constraint == "distance"){
-        if (tmiles <= max.dist) {
-          cat("\nCentroid in range")
-          return(cid)
-        } else {
-          cat("\nCentroid not in range")
-          return()
+        # set threshold travel dist in miles
+        max.dist <- max.dist
+      }
+      
+      # iterate over candidate counties
+      cids.in.range <- 
+        foreach (f = cand.counties$cid[1:length(cand.counties$cid)],
+                 .export = c("TLRoute"),
+                 .packages = c('raster', 'sp', 'rgdal',
+                               'rgeos', 'geosphere')) %do% {
+                                
+                                  CheckIfInRange(f, par.bioref, cand.counties, 
+                                                edges.data)
+                               }
+      
+      # init vec to store results
+      in.range <- c(NULL) 
+      
+      # collect results in vector
+      for (i in seq(1, length(cids.in.range))) {
+        elem <- as.character(cids.in.range[[i]][1])
+        if (!is.null(cids.in.range[i])) {
+          in.range <- c(in.range, elem)
         }
       }
-    }
-    
-    # iterate over candidate counties
-    cids.in.range <- 
-      foreach (f = cand.counties$cid[1:length(cand.counties$cid)],
-               .export = c("TLRoute"),
-               .packages = c('raster', 'sp', 'rgdal',
-                             'rgeos', 'geosphere')) %do% {
-        CheckIfInRange(f, par.bioref, cand.counties, 
-                    edges.data)
+      
+      # create subset of county centroids for counties in range
+      in.range.counties <- cand.counties[cand.counties$cid %in% in.range, ]
+      
+      # if no counties in range assign NA to CIDS_IN_RANGE col
+      if (is.null(in.range)){
+        output.cids.ls[[RID]] <- NA
+      } else {
+        # add in.range.counties list to output list
+        output.cids.ls[[RID]] <- in.range
       }
-    
-    # init vec to store results
-    in.range <- c(NULL) 
-    
-    # collect results in vector
-    for (i in seq(1, length(cids.in.range))) {
-      elem <- as.character(cids.in.range[[i]][1])
-      if (!is.null(cids.in.range[i])) {
-        in.range <- c(in.range, elem)
-      }
-    }
-    
-    # create subset of county centroids for counties in range
-    in.range.counties <- cand.counties[cand.counties$cid %in% in.range, ]
-    
-    # if no counties in range assign NA to CIDS_IN_RANGE col
-    if (is.null(in.range)){
-      output.cids.ls[[RID]] <- NA
-    } else {
-      # add in.range.counties list to output list
-      output.cids.ls[[RID]] <- in.range
-    }
-    
-    # create directory if doesnt exist
-    if (!file.exists(paste0("../output/feedsheds/kmeans_clusters/",
-                     "CDL_crop_level/", crop))) {
-      system(paste0("mkdir ../output/feedsheds/kmeans_clusters/", crop))
-    }
-        
-    saveRDS(in.range, paste0("../output/feedsheds/kmeans_clusters/",
-                             crop,"/RID_", RID,
-                             "_", crop,  "_feedshed_", max.dist, "mi.RDS"))
-    
-    cat(sprintf("Finished with refinery RID: %s", RID))
-    
-    in.range
+      
+      saveRDS(in.range, paste0("../output/feedsheds/kmeans_clusters/",
+                               crop,"/RID_", RID,
+                               "_", crop,  "_feedshed_", max.dist, "mi.RDS"))
+      
+      cat(sprintf("Finished with refinery RID: %s", RID))
+      
+      in.range
     })
-                           }
-
+  }
+  
   # stop cluster
   stopCluster(cl)
   
@@ -276,7 +222,7 @@ TLPointsInRange <- function(hubs.data, nodes.data, crop, edges.data, constraint,
       rid.bioshed.df <- rbind(rid.bioshed.df, row)
     }
   }
-
+  
   # re-arrange columns
   output.df <- data.frame(rid.bioshed.df$BIOSHED_CIDS, rid.bioshed.df$RID)
   names(output.df) <- c("CIDS_IN_RANGE", "RID")

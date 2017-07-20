@@ -1,12 +1,6 @@
-# TODO:
-
-# convert to fx:
-# steps that find the raster cell vals for a particular crop type 
-
-#
 
 #------------------------------------------------------------------------------#
-# CropAndVectorizeRasterLayer_fun.R
+# CropAndVectorizeRaster_fun.R
 
 # AUTHOR:
 # Tyler Huntington, 2017
@@ -96,7 +90,7 @@ require(iterators)
 require(doSNOW)
 
 
-CropAndVectorizeRaster <- function(counties.data, raster.path, fips) {
+ClipVectorizeCDL <- function(counties.data, raster.path, fips) {
   
   print(paste("Calculating weighted centroids for", fips, sep = ": "))
   

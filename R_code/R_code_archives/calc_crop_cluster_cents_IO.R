@@ -86,7 +86,7 @@ aea.crs <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0
 
 # Set params
 crop <- "Corn"
-raster.path <- "../../Desktop/very_large_files//cdl/cdl_2016_30m.img"
+raster.path <- "../../Desktop/very_large_files/cdl/cdl_2016_30m.img"
 counties <- readRDS("../clean_binary_data/counties.spdf.RDS")
 fips.codes <- as.character(counties$FIPS)
 

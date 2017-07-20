@@ -9,14 +9,14 @@
 # PI: Corinne Scown PhD
 
 # PURPOSE:
-# An analysis script to find the geographic centroids of all US counties 
-# weighted by the spatial distribution of crop and pasture land within each 
+# An analysis script to find the geographic centroids of all US counties
+# weighted by the spatial distribution of crop and pasture land within each
 # county. Weighted centroids will serve as the nodes in a network analysis for
 # calculating potential feedstock supplies within range of existing US
-# biorefinery locations. 
+# biorefinery locations.
 
 # OUTPUTS:
-# An object of class SpatialPointsDataFrame in which each point 
+# An object of class SpatialPointsDataFrame in which each point
 # represents the weighted centroid of a county in the contiguous US.
 
 #------------------------------------------------------------------------------#
@@ -38,14 +38,14 @@ csf <- function() {
     ls_vars = ls(sys.frames()[[1]])
     if ("fileName" %in% ls_vars) {
       # Source'd via RStudio
-      return(normalizePath(sys.frames()[[1]]$fileName)) 
+      return(normalizePath(sys.frames()[[1]]$fileName))
     } else {
       if (!is.null(sys.frames()[[1]]$ofile)) {
         # Source'd via R console
         return(normalizePath(sys.frames()[[1]]$ofile))
       } else {
         # RStudio Run Selection
-        # http://stackoverflow.com/a/35842176/2292993  
+        # http://stackoverflow.com/a/35842176/2292993
         return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
       }
     }
@@ -70,7 +70,7 @@ rm(list=ls())
 # install.packages("maptools")
 # install.packages("rgdal")
 # install.packages("plyr")
-# 
+#
 
 ###### LOAD LIBRARIES ######
 library(raster)
@@ -93,80 +93,80 @@ library(rgeos)
 
 
 CropCountyRaster <- function(counties.data, raster.path, fips) {
-  
+
   print(paste("Calculating weighted centroids for", fips, sep = ": "))
-  
+
   # crop counties layer to particular state
   county <- subset(counties.data, counties.data$FIPS == fips)
-  
+
   # load raster data
   raster.data <- raster(raster.path)
-  
+
   ###### PREP DATA #######
-  
+
   print("cropping extent of NLCD layer to county...")
   # crop extent of nlcd RasterLayer to extent of US counties layer
-  # tempfile <- paste("../../../../../../Desktop/lfs_temp/cropped_", 
+  # tempfile <- paste("../../../../../../Desktop/lfs_temp/cropped_",
   #                   fips, "_raster", sep = "")
-  
-  tempfile <- paste("../../../../../../Desktop/lfs_temp/cropped_", 
+
+  tempfile <- paste("../../../../../../Desktop/lfs_temp/cropped_",
                     fips, "_raster_test", sep = "")
-  
+
   raster::crop(raster.data, county, filename = tempfile, overwrite = T)
-  
+
   # convert to raster
   county.raster <- raster(tempfile)
-  
+
   # re-project mask raster to standardized projection
   proj4string(county.raster) <- crs(county)
-  
+
   # set extent of mask to extent of county polys
   extent(county.raster) <- extent(county)
-  
-  # new.tempfile <- paste0("../../../../../../Desktop/lfs_temp/FIPS_", 
+
+  # new.tempfile <- paste0("../../../../../../Desktop/lfs_temp/FIPS_",
   #                        fips, "_raster")
-  
-  new.tempfile <- paste0("../../../../../../Desktop/lfs_temp/FIPS_", 
+
+  new.tempfile <- paste0("../../../../../../Desktop/lfs_temp/FIPS_",
                          fips, "_raster_test")
-  
-  
+
+
   # write out raster
   writeRaster(county.raster, new.tempfile, overwrite = T)
-  
+
   # re-load raster layer into workspace
   county.raster <- raster(new.tempfile)
-  
+
   # convert to matrix
   mx <- as.matrix(county.raster)
-  
+
   # update vals
   mx[mx == 81 | mx == 82] <- 1
   mx[mx != 1] <- 0
-  
+
   # convert to raster
   county.raster <- raster(mx)
-  
+
   # re-project mask raster to standardized projection
   proj4string(county.raster) <- crs(county)
-  
+
   # set extent of mask to extent of county polys
   extent(county.raster) <- extent(county)
-  
+
   # write out raster
   writeRaster(county.raster, new.tempfile, overwrite = T)
-  
+
   # re-load raster
   ras <- raster(new.tempfile)
-  
+
   # convert raster cells to pts
   ras.pts <- rasterToPoints(ras, fun=function(x){x>0})
-  
+
   # export point representation of raster layer
   # saveRDS(ras.pts, paste0("../../../../../../Desktop/lfs_temp/",
-  #                         "raster_points/FIPS_", 
+  #                         "raster_points/FIPS_",
   #                         fips, "_ras_pts.RDS"))
-  
-  saveRDS(ras.pts, paste0("../output/FIPS_", 
+
+  saveRDS(ras.pts, paste0("../output/FIPS_",
                           fips, "_ras_pts.RDS"))
 }
 
@@ -179,7 +179,7 @@ CropCountyRaster <- function(counties.data, raster.path, fips) {
 counties <- readRDS("../clean_binary_data/counties.spdf.RDS")
 
 # load NLCD raster
-raster.path <- (paste0("../../../../../../Desktop/very_large_files/", 
+raster.path <- (paste0("../../../../../../Desktop/very_large_files/",
                        "nlcd_2011_landcover_2011_edition_2014_10_10.img"))
 
 
