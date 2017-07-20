@@ -165,7 +165,6 @@ SumBioshedFeeds <- function(counties.data,
     in.range.fips <- lapply(in.range.cids, function(x) {substr(x, 1, 5)})
     in.range.fips <- unique(unlist(in.range.fips))
     
-    
     # subset counties layer for FIPS in range
     catchment.spdf <- counties.data[counties.data$FIPS %in% in.range.fips, ]
     
@@ -212,6 +211,7 @@ SumBioshedFeeds <- function(counties.data,
       prod.cols <- which(unlist(lapply(cols, IsProductionCol)))
       
       # update vals
+      cnty.sp@data[is.na(cnty.sp@data)] <- 0
       cnty.sp@data[,prod.cols] <- (prop.in.shed * cnty.sp@data[,prod.cols])
   
       # slot updated production vals into catchment spdf

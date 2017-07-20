@@ -99,7 +99,7 @@ fips.codes <- counties$FIPS
 # parallel comp
 # init cluster
 no.cores <- detectCores()
-cl <- makeCluster(no.cores, type = "SOCK", outfile="log.txt")
+cl <- makeCluster(no.cores, type = "SOCK", outfile="")
 registerDoSNOW(cl)
 
 US.cluster.cents <-

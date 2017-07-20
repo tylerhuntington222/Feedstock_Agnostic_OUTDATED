@@ -18,39 +18,39 @@
 
 #-----------------------------------------------------------------------------#
 
-###### BASIC FUNCTIONS ######
-
-# a basic function to get the filepath of the current script
-csf <- function() {
-  # adapted from http://stackoverflow.com/a/32016824/2292993
-  cmdArgs = commandArgs(trailingOnly = FALSE)
-  needle = "--file="
-  match = grep(needle, cmdArgs)
-  if (length(match) > 0) {
-    # Rscript via command line
-    return(normalizePath(sub(needle, "", cmdArgs[match])))
-  } else {
-    ls_vars = ls(sys.frames()[[1]])
-    if ("fileName" %in% ls_vars) {
-      # Source'd via RStudio
-      return(normalizePath(sys.frames()[[1]]$fileName)) 
-    } else {
-      if (!is.null(sys.frames()[[1]]$ofile)) {
-        # Source'd via R console
-        return(normalizePath(sys.frames()[[1]]$ofile))
-      } else {
-        # RStudio Run Selection
-        # http://stackoverflow.com/a/35842176/2292993  
-        return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
-      }
-    }
-  }
-}
-
-###### SET WORKING DIRECTORY ######
-this.dir <- dirname(csf())
-setwd(this.dir)
-rm(list=ls())
+# ###### BASIC FUNCTIONS ######
+# 
+# # a basic function to get the filepath of the current script
+# csf <- function() {
+#   # adapted from http://stackoverflow.com/a/32016824/2292993
+#   cmdArgs = commandArgs(trailingOnly = FALSE)
+#   needle = "--file="
+#   match = grep(needle, cmdArgs)
+#   if (length(match) > 0) {
+#     # Rscript via command line
+#     return(normalizePath(sub(needle, "", cmdArgs[match])))
+#   } else {
+#     ls_vars = ls(sys.frames()[[1]])
+#     if ("fileName" %in% ls_vars) {
+#       # Source'd via RStudio
+#       return(normalizePath(sys.frames()[[1]]$fileName))
+#     } else {
+#       if (!is.null(sys.frames()[[1]]$ofile)) {
+#         # Source'd via R console
+#         return(normalizePath(sys.frames()[[1]]$ofile))
+#       } else {
+#         # RStudio Run Selection
+#         # http://stackoverflow.com/a/35842176/2292993
+#         return(normalizePath(rstudioapi::getActiveDocumentContext()$path))
+#       }
+#     }
+#   }
+# }
+# 
+# ###### SET WORKING DIRECTORY ######
+# this.dir <- dirname(csf())
+# setwd(this.dir)
+# rm(list=ls())
 
 
 ###### LOAD LIBRARIES #######
@@ -88,19 +88,19 @@ bt.data <- readRDS("../clean_binary_data/bt_biomass_18_30_40.df.RDS")
 
 
 ###### LOAD FUNCTIONS ######
-source("parTLCidsInRange_fun.R")
+source("FindPointsInRange_fun.R")
 source("SumBioshedFeeds_CIDS_fun.R")
 
 # create boundary of midwest
 mw.states <- c("IL", "IN", "IA", "KS", "MI", "MN", 
                "MO", "NE", "ND","OH", "SD", "WI")
-  
+
 mw.counties <- counties[counties$STATEABBREV %in% mw.states,]
 
 mw.extent <- extent(mw.counties)
 
 # generate raster layer with extent of midwest boundary
-ras <- raster(mw.extent, ncol = 40, nrow = 40)
+ras <- raster(mw.extent, ncol = 35, nrow = 35)
 proj4string(ras) <- crs(counties)
 
 # convert raster to pts
@@ -116,15 +116,18 @@ rownames(p.refs@data) <- rownames(p.refs@coords) <- p.refs$RID
 
 
 # determine ag cents in range of p.refs
-
-# catchments <- parTLPointsInRange(biorefs.sptdf, centroids.data, 
-biosheds <- TLPointsInRange(p.refs, centroids, crop = "ECrops", 
+biosheds <- FindPointsInRange(p.refs, crop = "EnergyCrops", 
                             road.net, 
                             constraint = "distance", max.dist = 50, 
                             max.time = NULL)
 
+saveRDS(biosheds, "../optimization_biosheds.RDS")
 
 
+# subset BT data for particular year, scenario and price per dt
+
+
+# determine biomass availability based on BT data
 feeds <- c("Sorghum", "Switchgrass", "Miscanthus")
 p.refs <- SumBioshedFeeds(counties,
                           p.refs,
@@ -132,6 +135,8 @@ p.refs <- SumBioshedFeeds(counties,
                           centroids,
                           bt.data,
                           feed_choices = feeds)
+
+saveRDS(p.refs, "../output/optimization_res.RDS")
 
 
 
